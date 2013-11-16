@@ -94,11 +94,10 @@ void Final::draw(int width, int height, double brightness)
   finalProg->use();
   finalProg->uniform<int>("solidData") = 0;
   finalProg->uniform<int>("cloudData") = 1;
-  Matrix<3,2> ct;
+  Matrix<2,2> ct;
   ct(0,0) =  cos(color_cycle);  ct(0,1) = sin(color_cycle);
   ct(1,0) = -sin(color_cycle);  ct(1,1) = cos(color_cycle);
-  ct(2,0) = 0.19784;        ct(2,1) = 0.46832;
-  finalProg->uniform<Matrix<3,2> >("color_trans") = ct;
+  finalProg->uniform<Matrix<2,2> >("color_trans") = ct;
   finalProg->uniform<int>("use_color") = getColorPhase();
   finalProg->uniform<float>("brightness") = brightness;
   glActiveTexture(GL_TEXTURE0);

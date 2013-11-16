@@ -163,6 +163,15 @@ operator=(const std::vector<Vector<4> > &x)
 }
 
 template <>
+void Uniform<Matrix<2,2> >::operator=(const Matrix<2,2> &x)
+{
+  verify_used();
+  Array<4,GLfloat> x_array(x);
+  GLfloat *data_ptr = &(x_array[0]);
+  glUniformMatrix2fv(location, 1, GL_TRUE, data_ptr);
+}
+
+template <>
 void Uniform<Matrix<3,2> >::operator=(const Matrix<3,2> &x)
 {
   verify_used();
