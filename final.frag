@@ -73,11 +73,10 @@ float distance_to_gamut_edge(vec2 uv_from_white, float brightness)
   vec4 multiples_of_angle = vec4(0., 1., 2., 3.) * angle;
   vec4 cos_values0 = cos(multiples_of_angle + ph_coeffs0);
   vec4 cos_values1 = cos(multiples_of_angle + ph_coeffs1);
-  brightness *= 2.0;
-  brightness = pow(brightness, 1.625);
+  float t = pow(2.0 * brightness, 1.625);
   return
-    dot(cos_values0, cos_coeffs0) * (1.0 - brightness) +
-    dot(cos_values1, cos_coeffs1) * brightness;
+    dot(cos_values0, cos_coeffs0) * (1.0 - t) +
+    dot(cos_values1, cos_coeffs1) * t;
 }
 
 void main(void)
@@ -121,7 +120,7 @@ void main(void)
     cloud_uv = vec2(0, 0);
 
   // Translate the origin to the white point.
-  cloud_uv += vec2(0.19784, 0.46832);
+  cloud_uv += uv_white;
 
   // Convert CIE (u,v) color coordinates (as per CIELUV) to (x,y)
   vec2 cloud_xy = vec2(9.0, 4.0) * cloud_uv;
