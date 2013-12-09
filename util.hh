@@ -76,4 +76,14 @@ inline std::map<K,V> singleton(const K &k, const V &v)
   return m;
 }
 
+class Uncopyable
+{
+public:
+  Uncopyable() {}
+
+private:
+  Uncopyable(const Uncopyable &); // DO NOT DEFINE
+  Uncopyable &operator=(const Uncopyable &); // DO NOT DEFINE
+};
+
 #endif

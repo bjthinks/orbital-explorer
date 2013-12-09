@@ -51,20 +51,11 @@
 #include <cstdlib>
 #include <cstdio>
 
+#include "util.hh"
 #include "glprocs.hh"
 
 void GetGLError_(const char *file, int line);
 #define GetGLError() GetGLError_(__FILE__, __LINE__)
-
-class Uncopyable
-{
-public:
-  Uncopyable() {}
-
-private:
-  Uncopyable(const Uncopyable &); // DO NOT DEFINE
-  Uncopyable &operator=(const Uncopyable &); // DO NOT DEFINE
-};
 
 // This uses OpenGL 3.3 features, so it isn't Mac-safe...
 #if 0
