@@ -104,6 +104,7 @@ void Triangle::color(Color c)
 
 void Triangle::draw()
 {
+  glViewport(left(), bottom(), 8, 8);
   triangleProg->use();
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_BLEND);

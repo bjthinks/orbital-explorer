@@ -148,12 +148,15 @@ static int go()
   Camera camera;
   SDL_Event event;
   bool show_controls = true;
-  Triangle tri(NULL);
+  Frame ui(NULL);
+  ui.moveto(4, 4);
+  Triangle tri(&ui);
   tri.x(8, 8);
   tri.y(8, 0);
   tri.z(0, 8);
   tri.color(green);
-  Quad quad(NULL);
+  Quad quad(&ui);
+  quad.moveto(8, 0);
   quad.x(1, 1);
   quad.y(7, 1);
   quad.z(7, 7);
@@ -257,10 +260,7 @@ static int go()
     display(viewport, camera);
     if (show_controls)
       drawControls();
-    glViewport(0, 0, 8, 8);
-    tri.draw();
-    glViewport(8, 0, 8, 8);
-    quad.draw();
+    ui.draw();
     SDL_GL_SwapWindow(window);
   }
 

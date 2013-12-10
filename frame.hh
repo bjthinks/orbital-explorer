@@ -58,6 +58,19 @@ void initFrames();
 class Frame : public Uncopyable
 {
 public:
+  Frame(Frame *p)
+    : parent(p),
+      left_offset(0),
+      bottom_offset(0)
+  {
+    if (parent) parent->addChild(this);
+  }
+  ~Frame()
+  {
+    if (children.size() != 0)
+      throw std::logic_error("Frame destroyed but has children");
+    if (parent) parent->delChild(this);
+  }
   virtual void color(Color c)
   {
     for (std::list<Frame *>::iterator i = children.begin();
@@ -70,12 +83,27 @@ public:
          i != children.end(); ++i)
       (*i)->draw();
   }
+  void moveto(int new_left, int new_bottom)
+  {
+    left_offset = new_left;
+    bottom_offset = new_bottom;
+  }
+  int left()
+  {
+    if (parent)
+      return left_offset + parent->left();
+    else
+      return left_offset;
+  }
+  int bottom()
+  {
+    if (parent)
+      return bottom_offset + parent->bottom();
+    else
+      return bottom_offset;
+  }
 
 protected:
-  Frame(Frame *p) : parent(p)
-  {
-    if (parent) parent->addChild(this);
-  }
   void addChild(Frame *c)
   {
     children.push_front(c);
@@ -84,16 +112,12 @@ protected:
   {
     children.remove(c);
   }
-  ~Frame()
-  {
-    if (children.size() != 0)
-      throw std::logic_error("Frame destroyed but has children");
-    if (parent) parent->delChild(this);
-  }
 
 private:
   Frame *parent;
   std::list<Frame *> children;
+  int left_offset;
+  int bottom_offset;
 };
 
 class Triangle : public Frame
