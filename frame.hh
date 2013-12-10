@@ -61,9 +61,15 @@ public:
   Frame(Frame *p)
     : parent(p),
       left_offset(0),
-      bottom_offset(0)
+      bottom_offset(0),
+      my_width(0),
+      my_height(0)
   {
-    if (parent) parent->addChild(this);
+    if (parent) {
+      parent->addChild(this);
+      my_width = parent->width();
+      my_height = parent->height();
+    }
   }
   ~Frame()
   {
@@ -102,6 +108,19 @@ public:
     else
       return bottom_offset;
   }
+  void resize(int new_width, int new_height)
+  {
+    my_width = new_width;
+    my_height = new_height;
+  }
+  int width()
+  {
+    return my_width;
+  }
+  int height()
+  {
+    return my_height;
+  }
 
 protected:
   void addChild(Frame *c)
@@ -118,6 +137,8 @@ private:
   std::list<Frame *> children;
   int left_offset;
   int bottom_offset;
+  int my_width;
+  int my_height;
 };
 
 class Triangle : public Frame

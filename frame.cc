@@ -76,10 +76,8 @@ Triangle::Triangle(Frame *p)
 
 Vector<2> Triangle::deviceToWindow(double x0, double x1)
 {
-  int width = 8;
-  int height = 8;
-  return Vector2(2.0 * x0 / double(width) - 1.0,
-                 2.0 * x1 / double(height) - 1.0);
+  return Vector2(2.0 * x0 / double(width()) - 1.0,
+                 2.0 * x1 / double(height()) - 1.0);
 }
 
 void Triangle::x(double x0, double x1)
@@ -104,7 +102,7 @@ void Triangle::color(Color c)
 
 void Triangle::draw()
 {
-  glViewport(left(), bottom(), 8, 8);
+  glViewport(left(), bottom(), width(), height());
   triangleProg->use();
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_BLEND);

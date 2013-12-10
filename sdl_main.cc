@@ -150,13 +150,16 @@ static int go()
   bool show_controls = true;
   Frame ui(NULL);
   ui.moveto(4, 4);
+  ui.resize(16, 8);
   Triangle tri(&ui);
+  tri.resize(8, 8);
   tri.x(8, 8);
   tri.y(8, 0);
   tri.z(0, 8);
   tri.color(green);
   Quad quad(&ui);
   quad.moveto(8, 0);
+  quad.resize(8, 8);
   quad.x(1, 1);
   quad.y(7, 1);
   quad.z(7, 7);
