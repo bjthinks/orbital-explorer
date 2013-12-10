@@ -33,7 +33,8 @@ OFILES=\
 	final.o \
 	glprocs.o \
 	myTwEventSDL20.o \
-	icon.o
+	icon.o \
+	frame.o
 
 PROG = orbital-explorer
 TEST = unittests

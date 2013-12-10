@@ -43,17 +43,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SHADERS_HH
-#define SHADERS_HH
+#version 150
 
-extern const char *triangleVertexShaderSource;
-extern const char *triangleFragmentShaderSource;
-extern const char *solidVertexShaderSource;
-extern const char *solidFragmentShaderSource;
-extern const char *cloudVertexShaderSource;
-extern const char *cloudGeometryShaderSource;
-extern const char *cloudFragmentShaderSource;
-extern const char *finalVertexShaderSource;
-extern const char *finalFragmentShaderSource;
+uniform vec4 color;
+out vec4 fragColor;
 
-#endif
+void main(void)
+{
+  fragColor = color;
+}

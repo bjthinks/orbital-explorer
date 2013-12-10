@@ -43,17 +43,22 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SHADERS_HH
-#define SHADERS_HH
+#version 150
 
-extern const char *triangleVertexShaderSource;
-extern const char *triangleFragmentShaderSource;
-extern const char *solidVertexShaderSource;
-extern const char *solidFragmentShaderSource;
-extern const char *cloudVertexShaderSource;
-extern const char *cloudGeometryShaderSource;
-extern const char *cloudFragmentShaderSource;
-extern const char *finalVertexShaderSource;
-extern const char *finalFragmentShaderSource;
+in int index;
+uniform vec2 x, y, z;
 
-#endif
+void main(void)
+{
+  vec2 t;
+  if (index == 0)
+    t = x;
+  else if (index == 1)
+    t = y;
+  else if (index == 2)
+    t = z;
+  else
+    t = vec2(0, 0);
+
+  gl_Position = vec4(t.xy, 0, 1);
+}

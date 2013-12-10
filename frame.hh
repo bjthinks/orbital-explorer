@@ -43,17 +43,87 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SHADERS_HH
-#define SHADERS_HH
+#ifndef FRAME_HH
+#define FRAME_HH
 
-extern const char *triangleVertexShaderSource;
-extern const char *triangleFragmentShaderSource;
-extern const char *solidVertexShaderSource;
-extern const char *solidFragmentShaderSource;
-extern const char *cloudVertexShaderSource;
-extern const char *cloudGeometryShaderSource;
-extern const char *cloudFragmentShaderSource;
-extern const char *finalVertexShaderSource;
-extern const char *finalFragmentShaderSource;
+#include <list>
+
+#include "util.hh"
+#include "oopengl.hh"
+#include "vector.hh"
+
+void initFrames();
+
+class Frame : public Uncopyable
+{
+public:
+  virtual void color(double r, double g, double b, double a)
+  {
+    for (std::list<Frame *>::iterator i = children.begin();
+         i != children.end(); ++i)
+      (*i)->color(r, g, b, a);
+  }
+  virtual void draw()
+  {
+    for (std::list<Frame *>::iterator i = children.begin();
+         i != children.end(); ++i)
+      (*i)->draw();
+  }
+
+protected:
+  Frame(Frame *p) : parent(p)
+  {
+    if (parent) parent->addChild(this);
+  }
+  void addChild(Frame *c)
+  {
+    children.push_front(c);
+  }
+  void delChild(Frame *c)
+  {
+    children.remove(c);
+  }
+  ~Frame()
+  {
+    if (children.size() != 0)
+      throw std::logic_error("Frame destroyed but has children");
+    if (parent) parent->delChild(this);
+  }
+
+private:
+  Frame *parent;
+  std::list<Frame *> children;
+};
+
+class Triangle : public Frame
+{
+public:
+  Triangle(Frame *p);
+  void x(double x0, double x1);
+  void y(double y0, double y1);
+  void z(double z0, double z1);
+  void color(double r, double g, double b, double a);
+  void draw();
+
+private:
+  static Program *triangleProg;
+  static VertexArrayObject *triangleVAO;
+  Vector<2> xx, yy, zz;
+  Vector<4> cc;
+  Vector<2> deviceToWindow(double x0, double x1);
+};
+
+class Quad : public Frame
+{
+public:
+  Quad(Frame *p);
+  void x(double x0, double x1);
+  void y(double y0, double y1);
+  void z(double z0, double z1);
+  void w(double w0, double w1);
+
+private:
+  Triangle s, t;
+};
 
 #endif

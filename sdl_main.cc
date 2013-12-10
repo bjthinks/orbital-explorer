@@ -55,6 +55,7 @@
 #include "viewport.hh"
 #include "controls.hh"
 #include "icon.hh"
+#include "frame.hh"
 
 using namespace std;
 
@@ -147,6 +148,17 @@ static int go()
   Camera camera;
   SDL_Event event;
   bool show_controls = true;
+  Triangle tri(NULL);
+  tri.x(8, 8);
+  tri.y(8, 0);
+  tri.z(0, 8);
+  tri.color(0, 1, 0, 1);
+  Quad quad(NULL);
+  quad.x(1, 1);
+  quad.y(7, 1);
+  quad.z(7, 7);
+  quad.w(1, 7);
+  quad.color(1, 0, 1, 1);
   while (1) {
     // Clear the event queue, then redraw a frame
 
@@ -245,6 +257,10 @@ static int go()
     display(viewport, camera);
     if (show_controls)
       drawControls();
+    glViewport(0, 0, 8, 8);
+    tri.draw();
+    glViewport(8, 0, 8, 8);
+    quad.draw();
     SDL_GL_SwapWindow(window);
   }
 

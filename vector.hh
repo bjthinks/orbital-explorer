@@ -221,6 +221,16 @@ inline Vector<3> Vector3(double x, double y, double z)
   return a;
 }
 
+inline Vector<4> Vector4(float x, float y, float z, float w)
+{
+  Vector<4> a;
+  a[0] = x;
+  a[1] = y;
+  a[2] = z;
+  a[3] = w;
+  return a;
+}
+
 inline FVector<2> FVector2(float x, float y)
 {
   FVector<2> a;

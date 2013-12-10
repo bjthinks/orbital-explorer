@@ -150,6 +150,13 @@ void Uniform<Vector<2> >::operator=(const Vector<2> &x)
 }
 
 template <>
+void Uniform<Vector<4> >::operator=(const Vector<4> &x)
+{
+  verify_used();
+  glUniform4f(location, x[0], x[1], x[2], x[3]);
+}
+
+template <>
 void Uniform<std::vector<Vector<4> > >::
 operator=(const std::vector<Vector<4> > &x)
 {
