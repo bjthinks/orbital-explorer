@@ -51,17 +51,18 @@
 #include "util.hh"
 #include "oopengl.hh"
 #include "vector.hh"
+#include "color.hh"
 
 void initFrames();
 
 class Frame : public Uncopyable
 {
 public:
-  virtual void color(double r, double g, double b, double a)
+  virtual void color(Color c)
   {
     for (std::list<Frame *>::iterator i = children.begin();
          i != children.end(); ++i)
-      (*i)->color(r, g, b, a);
+      (*i)->color(c);
   }
   virtual void draw()
   {
@@ -102,14 +103,14 @@ public:
   void x(double x0, double x1);
   void y(double y0, double y1);
   void z(double z0, double z1);
-  void color(double r, double g, double b, double a);
+  void color(Color c);
   void draw();
 
 private:
   static Program *triangleProg;
   static VertexArrayObject *triangleVAO;
   Vector<2> xx, yy, zz;
-  Vector<4> cc;
+  Color cc;
   Vector<2> deviceToWindow(double x0, double x1);
 };
 

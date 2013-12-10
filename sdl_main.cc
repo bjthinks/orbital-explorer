@@ -152,13 +152,13 @@ static int go()
   tri.x(8, 8);
   tri.y(8, 0);
   tri.z(0, 8);
-  tri.color(0, 1, 0, 1);
+  tri.color(green);
   Quad quad(NULL);
   quad.x(1, 1);
   quad.y(7, 1);
   quad.z(7, 7);
   quad.w(1, 7);
-  quad.color(1, 0, 1, 1);
+  quad.color(magenta);
   while (1) {
     // Clear the event queue, then redraw a frame
 

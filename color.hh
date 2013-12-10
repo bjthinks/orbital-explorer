@@ -43,102 +43,51 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "frame.hh"
-#include "shaders.hh"
+#ifndef COLOR_HH
+#define COLOR_HH
+
 #include "vector.hh"
 
-Program *Triangle::triangleProg = NULL;
-VertexArrayObject *Triangle::triangleVAO = NULL;
-
-Triangle::Triangle(Frame *p)
-  : Frame(p)
+class Color : public Vector<4>
 {
-  if (triangleProg == NULL) {
-    triangleProg = new Program();
-    triangleProg->vertexShader(triangleVertexShaderSource);
-    triangleProg->fragmentShader(triangleFragmentShaderSource);
-    glBindAttribLocation(*triangleProg, 0, "index");
-    glBindFragDataLocation(*triangleProg, 0, "fragColor");
-    triangleProg->link();
-
-    GetGLError();
-
-    triangleVAO = new VertexArrayObject();
-    triangleVAO->bind();
-    int verts[3] = { 0, 1, 2 };
-    triangleVAO->buffer(GL_ARRAY_BUFFER, verts, sizeof(verts));
-    glEnableVertexAttribArray(0);
-    glVertexAttribIPointer(0, 1, GL_INT, sizeof(int), NULL);
-
-    GetGLError();
+public:
+  Color()
+  {
+    // Default to clear
+    set(0, 0, 0, 0);
   }
-}
+  Color(double r, double g, double b, double a)
+  {
+    set(r, g, b, a);
+  }
+  Color(double r, double g, double b)
+  {
+    set(r, g, b, 1);
+  }
+  Color(double c)
+  {
+    set(c, c, c, 1);
+  }
 
-Vector<2> Triangle::deviceToWindow(double x0, double x1)
-{
-  int width = 8;
-  int height = 8;
-  return Vector2(2.0 * x0 / double(width) - 1.0,
-                 2.0 * x1 / double(height) - 1.0);
-}
+private:
+  void set(double r, double g, double b, double a)
+  {
+    (*this)[0] = r;
+    (*this)[1] = g;
+    (*this)[2] = b;
+    (*this)[3] = a;
+  }
+};
 
-void Triangle::x(double x0, double x1)
-{
-  xx = deviceToWindow(x0, x1);
-}
+const Color clear;
+const Color black(0);
+const Color grey(.5);
+const Color white(1);
+const Color red  (1, 0, 0);
+const Color green(0, 1, 0);
+const Color blue (0, 0, 1);
+const Color cyan   (0, 1, 1);
+const Color magenta(1, 0, 1);
+const Color yellow (1, 1, 0);
 
-void Triangle::y(double y0, double y1)
-{
-  yy = deviceToWindow(y0, y1);
-}
-
-void Triangle::z(double z0, double z1)
-{
-  zz = deviceToWindow(z0, z1);
-}
-
-void Triangle::color(Color c)
-{
-  cc = c;
-}
-
-void Triangle::draw()
-{
-  triangleProg->use();
-  glDisable(GL_DEPTH_TEST);
-  glDisable(GL_BLEND);
-  triangleVAO->bind();
-  triangleProg->uniform<Vector<2> >("x") = xx;
-  triangleProg->uniform<Vector<2> >("y") = yy;
-  triangleProg->uniform<Vector<2> >("z") = zz;
-  triangleProg->uniform<Vector<4> >("color") = cc;
-  glDrawArrays(GL_TRIANGLES, 0, 3);
-
-  GetGLError();
-}
-
-Quad::Quad(Frame *p)
-  : Frame(p), s(this), t(this)
-{}
-
-void Quad::x(double x0, double x1)
-{
-  s.x(x0, x1);
-  t.x(x0, x1);
-}
-
-void Quad::y(double y0, double y1)
-{
-  s.y(y0, y1);
-}
-
-void Quad::z(double z0, double z1)
-{
-  s.z(z0, z1);
-  t.y(z0, z1);
-}
-
-void Quad::w(double w0, double w1)
-{
-  t.z(w0, w1);
-}
+#endif
