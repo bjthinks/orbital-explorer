@@ -53,42 +53,211 @@
 #include "vector.hh"
 #include "color.hh"
 
-void initFrames();
+// Small aggregate to encapsulate viewports.
+// FIXME: Name conflict needs resolution.
+
+struct Frameview
+{
+  Frameview(int new_left, int new_bottom, int new_width, int new_height)
+    : left(new_left), bottom(new_bottom), width(new_width), height(new_height)
+  {}
+  // Compose two viewports: inner = outer * inner_relative_to_outer
+  Frameview operator*(const Frameview &rhs)
+  {
+    return Frameview(left + rhs.left, bottom + rhs.bottom,
+                     std::max(0, std::min(rhs.width, width - rhs.left)),
+                     std::max(0, std::min(rhs.height, height - rhs.bottom)));
+  }
+  int left, bottom, width, height;
+};
+
+// Time to make a fun class hierarchy!
+
+// (Forward declarations)
+class Container;
+
+// A Frame may have a parent, which is a Container.
+// All Frames respond to being drawn.
 
 class Frame : public Uncopyable
 {
 public:
-  Frame(Frame *p)
-    : parent(p),
+  Frame(Container *p);
+  virtual ~Frame();
+  virtual void draw(Frameview view) = 0;
+
+protected:
+  Container *parent;
+};
+
+// A Container is a Frame which groups together its children.
+
+class Container : public Frame
+{
+public:
+  Container(Container *p);
+  ~Container();
+  void addChild(Frame *c);
+  void deleteChild(Frame *c);
+  void draw(Frameview view);
+
+private:
+  std::list<Frame *> children;
+};
+
+// Triangles are the basic drawing primitive.
+
+class Triangle : public Frame
+{
+public:
+  Triangle(Container *p);
+  void x(Vector<2> v);
+  void y(Vector<2> v);
+  void z(Vector<2> v);
+  void color(Color c);
+  void draw(Frameview view);
+
+private:
+  static Program *triangleProg;
+  static VertexArrayObject *triangleVAO;
+  Vector<2> xx, yy, zz;
+  Color cc;
+};
+
+// Quads are implemented as a pair of triangles.
+
+class Quad : public Container
+{
+public:
+  Quad(Container *p);
+  void x(Vector<2> v);
+  void y(Vector<2> v);
+  void z(Vector<2> v);
+  void w(Vector<2> v);
+  void color(Color c);
+
+private:
+  Triangle s, t;
+};
+
+// Implementations of "simple" functions follow.
+
+inline Frame::Frame(Container *p)
+  : parent(p)
+{
+  if (parent)
+    parent->addChild(this);
+}
+
+inline Frame::~Frame()
+{
+  if (parent)
+    parent->deleteChild(this);
+}
+
+inline Container::Container(Container *p)
+  : Frame(p)
+{}
+
+inline Container::~Container()
+{
+  if (children.size() != 0)
+    throw std::logic_error("Container destructed but has children");
+}
+
+inline void Container::addChild(Frame *c)
+{
+  children.push_front(c);
+}
+
+inline void Container::deleteChild(Frame *c)
+{
+  children.remove(c);
+}
+
+inline void Container::draw(Frameview view)
+{
+  for (std::list<Frame *>::iterator i = children.begin();
+       i != children.end(); ++i)
+    (*i)->draw(view);
+}
+
+inline void Triangle::x(Vector<2> v)
+{
+  xx = v;
+}
+
+inline void Triangle::y(Vector<2> v)
+{
+  yy = v;
+}
+
+inline void Triangle::z(Vector<2> v)
+{
+  zz = v;
+}
+
+inline void Triangle::color(Color c)
+{
+  cc = c;
+}
+
+inline Quad::Quad(Container *p)
+  : Container(p),
+    s(this),
+    t(this)
+{}
+
+inline void Quad::x(Vector<2> v)
+{
+  s.x(v);
+  t.x(v);
+}
+
+inline void Quad::y(Vector<2> v)
+{
+  s.y(v);
+}
+
+inline void Quad::z(Vector<2> v)
+{
+  s.z(v);
+  t.y(v);
+}
+
+inline void Quad::w(Vector<2> v)
+{
+  t.z(v);
+}
+
+inline void Quad::color(Color c)
+{
+  s.color(c);
+  t.color(c);
+}
+
+/*
+// A Window is a Container which restricts the viewable area.
+
+class Window : public Container
+{
+public:
+  Window(Window *p)
+    : Frame(p),
       left_offset(0),
       bottom_offset(0),
       my_width(0),
       my_height(0)
   {
     if (parent) {
-      parent->addChild(this);
       my_width = parent->width();
       my_height = parent->height();
     }
   }
-  ~Frame()
+  ~Window()
   {
-    if (children.size() != 0)
-      throw std::logic_error("Frame destroyed but has children");
-    if (parent) parent->delChild(this);
   }
-  virtual void color(Color c)
-  {
-    for (std::list<Frame *>::iterator i = children.begin();
-         i != children.end(); ++i)
-      (*i)->color(c);
-  }
-  virtual void draw()
-  {
-    for (std::list<Frame *>::iterator i = children.begin();
-         i != children.end(); ++i)
-      (*i)->draw();
-  }
+
   void moveto(int new_left, int new_bottom)
   {
     left_offset = new_left;
@@ -123,53 +292,13 @@ public:
   }
 
 protected:
-  void addChild(Frame *c)
-  {
-    children.push_front(c);
-  }
-  void delChild(Frame *c)
-  {
-    children.remove(c);
-  }
 
 private:
-  Frame *parent;
-  std::list<Frame *> children;
   int left_offset;
   int bottom_offset;
   int my_width;
   int my_height;
 };
-
-class Triangle : public Frame
-{
-public:
-  Triangle(Frame *p);
-  void x(double x0, double x1);
-  void y(double y0, double y1);
-  void z(double z0, double z1);
-  void color(Color c);
-  void draw();
-
-private:
-  static Program *triangleProg;
-  static VertexArrayObject *triangleVAO;
-  Vector<2> xx, yy, zz;
-  Color cc;
-  Vector<2> deviceToWindow(double x0, double x1);
-};
-
-class Quad : public Frame
-{
-public:
-  Quad(Frame *p);
-  void x(double x0, double x1);
-  void y(double y0, double y1);
-  void z(double z0, double z1);
-  void w(double w0, double w1);
-
-private:
-  Triangle s, t;
-};
+*/
 
 #endif

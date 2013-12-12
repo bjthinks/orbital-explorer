@@ -50,8 +50,12 @@
 Program *Triangle::triangleProg = NULL;
 VertexArrayObject *Triangle::triangleVAO = NULL;
 
-Triangle::Triangle(Frame *p)
-  : Frame(p)
+Triangle::Triangle(Container *p)
+  : Frame(p),
+    xx(Vector2(0, 0)),
+    yy(Vector2(0, 0)),
+    zz(Vector2(0, 0)),
+    cc(clear)
 {
   if (triangleProg == NULL) {
     triangleProg = new Program();
@@ -74,70 +78,24 @@ Triangle::Triangle(Frame *p)
   }
 }
 
-Vector<2> Triangle::deviceToWindow(double x0, double x1)
+static Vector<2> deviceToWindow(Frameview view, Vector<2> v)
 {
-  return Vector2(2.0 * x0 / double(width()) - 1.0,
-                 2.0 * x1 / double(height()) - 1.0);
+  return Vector2(2.0 * v[0] / double(view.width) - 1.0,
+                 2.0 * v[1] / double(view.height) - 1.0);
 }
 
-void Triangle::x(double x0, double x1)
+void Triangle::draw(Frameview view)
 {
-  xx = deviceToWindow(x0, x1);
-}
-
-void Triangle::y(double y0, double y1)
-{
-  yy = deviceToWindow(y0, y1);
-}
-
-void Triangle::z(double z0, double z1)
-{
-  zz = deviceToWindow(z0, z1);
-}
-
-void Triangle::color(Color c)
-{
-  cc = c;
-}
-
-void Triangle::draw()
-{
-  glViewport(left(), bottom(), width(), height());
+  glViewport(view.left, view.bottom, view.width, view.height);
   triangleProg->use();
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_BLEND);
   triangleVAO->bind();
-  triangleProg->uniform<Vector<2> >("x") = xx;
-  triangleProg->uniform<Vector<2> >("y") = yy;
-  triangleProg->uniform<Vector<2> >("z") = zz;
+  triangleProg->uniform<Vector<2> >("x") = deviceToWindow(view, xx);
+  triangleProg->uniform<Vector<2> >("y") = deviceToWindow(view, yy);
+  triangleProg->uniform<Vector<2> >("z") = deviceToWindow(view, zz);
   triangleProg->uniform<Vector<4> >("color") = cc;
   glDrawArrays(GL_TRIANGLES, 0, 3);
 
   GetGLError();
-}
-
-Quad::Quad(Frame *p)
-  : Frame(p), s(this), t(this)
-{}
-
-void Quad::x(double x0, double x1)
-{
-  s.x(x0, x1);
-  t.x(x0, x1);
-}
-
-void Quad::y(double y0, double y1)
-{
-  s.y(y0, y1);
-}
-
-void Quad::z(double z0, double z1)
-{
-  s.z(z0, z1);
-  t.y(z0, z1);
-}
-
-void Quad::w(double w0, double w1)
-{
-  t.z(w0, w1);
 }
