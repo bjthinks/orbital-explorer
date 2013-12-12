@@ -105,6 +105,28 @@ private:
   std::list<Frame *> children;
 };
 
+// A Window is a Container which constrains drawing to a smaller area.
+
+class Window : public Container
+{
+public:
+  Window(Container *p, Frameview view_relative_to_parent_window)
+    : Container(p),
+      relview(view_relative_to_parent_window)
+  {}
+  Window(Container *p)
+    : Container(p),
+      relview(Frameview(0, 0, 0, 0))
+  {}
+  void draw(Frameview outer)
+  {
+    Container::draw(outer * relview);
+  }
+
+private:
+  Frameview relview;
+};
+
 // Triangles are the basic drawing primitive.
 
 class Triangle : public Frame

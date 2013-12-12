@@ -149,7 +149,7 @@ static int go()
   SDL_Event event;
   bool show_controls = true;
 
-  Container ui(NULL);
+  Window ui(NULL, Frameview(0, 0, 16, 8));
   Triangle tri(&ui);
   tri.x(Vector2(8, 8));
   tri.y(Vector2(8, 0));
