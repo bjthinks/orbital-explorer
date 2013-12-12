@@ -149,7 +149,7 @@ static int go()
   SDL_Event event;
   bool show_controls = true;
 
-  Window ui(NULL, Frameview(0, 0, 16, 8));
+  Window ui(NULL, Frameview(0, 0, 16, 16));
   Triangle tri(&ui);
   tri.x(Vector2(8, 8));
   tri.y(Vector2(8, 0));
@@ -161,6 +161,9 @@ static int go()
   quad.z(Vector2(15, 7));
   quad.w(Vector2(9, 7));
   quad.color(magenta);
+  Rectangle rect(&ui);
+  rect.coords(Vector2(1, 9), Vector2(15, 15));
+  rect.color(yellow);
 
   while (1) {
     // Clear the event queue, then redraw a frame
@@ -260,7 +263,7 @@ static int go()
     display(viewport, camera);
     if (show_controls)
       drawControls();
-    ui.draw(Frameview(4, 4, 16, 8));
+    ui.draw(Frameview(4, 4, 16, 16));
     SDL_GL_SwapWindow(window);
   }
 

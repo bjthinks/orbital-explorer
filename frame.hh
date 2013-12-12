@@ -162,6 +162,31 @@ private:
   Triangle s, t;
 };
 
+// A Rectangle is a convenience wrapper around a Quad
+
+class Rectangle : public Container
+{
+public:
+  Rectangle(Container *p)
+    : Container(p),
+      q(this)
+  {}
+  void coords(Vector<2> llcorner, Vector<2> urcorner)
+  {
+    q.x(Vector2(llcorner[0], llcorner[1]));
+    q.y(Vector2(urcorner[0], llcorner[1]));
+    q.z(Vector2(urcorner[0], urcorner[1]));
+    q.w(Vector2(llcorner[0], urcorner[1]));
+  }
+  void color(Color c)
+  {
+    q.color(c);
+  }
+
+private:
+  Quad q;
+};
+
 // Implementations of "simple" functions follow.
 
 inline Frame::Frame(Container *p)
