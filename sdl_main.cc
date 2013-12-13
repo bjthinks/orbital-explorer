@@ -151,15 +151,10 @@ static int go()
 
   Window ui(NULL, Frameview(0, 0, 16, 16));
   Triangle tri(&ui);
-  tri.x(Vector2(8, 8));
-  tri.y(Vector2(8, 0));
-  tri.z(Vector2(0, 8));
+  tri.coords(Vector2(8, 8), Vector2(8, 0), Vector2(0, 8));
   tri.color(green);
   Quad quad(&ui);
-  quad.x(Vector2(9, 1));
-  quad.y(Vector2(15, 1));
-  quad.z(Vector2(15, 7));
-  quad.w(Vector2(9, 7));
+  quad.coords(Vector2(9, 1), Vector2(15, 1), Vector2(15, 7),Vector2(9, 7));
   quad.color(magenta);
   Rectangle rect(&ui);
   rect.coords(Vector2(1, 9), Vector2(15, 15));

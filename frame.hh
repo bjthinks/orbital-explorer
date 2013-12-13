@@ -133,9 +133,7 @@ class Triangle : public Frame
 {
 public:
   Triangle(Container *p);
-  void x(Vector<2> v);
-  void y(Vector<2> v);
-  void z(Vector<2> v);
+  void coords(Vector<2> x, Vector<2> y, Vector<2> z);
   void color(Color c);
   void draw(Frameview view);
 
@@ -152,10 +150,7 @@ class Quad : public Container
 {
 public:
   Quad(Container *p);
-  void x(Vector<2> v);
-  void y(Vector<2> v);
-  void z(Vector<2> v);
-  void w(Vector<2> v);
+  void coords(Vector<2> x, Vector<2> y, Vector<2> z, Vector<2> w);
   void color(Color c);
 
 private:
@@ -167,21 +162,9 @@ private:
 class Rectangle : public Container
 {
 public:
-  Rectangle(Container *p)
-    : Container(p),
-      q(this)
-  {}
-  void coords(Vector<2> llcorner, Vector<2> urcorner)
-  {
-    q.x(Vector2(llcorner[0], llcorner[1]));
-    q.y(Vector2(urcorner[0], llcorner[1]));
-    q.z(Vector2(urcorner[0], urcorner[1]));
-    q.w(Vector2(llcorner[0], urcorner[1]));
-  }
-  void color(Color c)
-  {
-    q.color(c);
-  }
+  Rectangle(Container *p);
+  void coords(Vector<2> llcorner, Vector<2> urcorner);
+  void color(Color c);
 
 private:
   Quad q;
@@ -229,19 +212,11 @@ inline void Container::draw(Frameview view)
     (*i)->draw(view);
 }
 
-inline void Triangle::x(Vector<2> v)
+inline void Triangle::coords(Vector<2> x, Vector<2> y, Vector<2> z)
 {
-  xx = v;
-}
-
-inline void Triangle::y(Vector<2> v)
-{
-  yy = v;
-}
-
-inline void Triangle::z(Vector<2> v)
-{
-  zz = v;
+  xx = x;
+  yy = y;
+  zz = z;
 }
 
 inline void Triangle::color(Color c)
@@ -255,32 +230,34 @@ inline Quad::Quad(Container *p)
     t(this)
 {}
 
-inline void Quad::x(Vector<2> v)
+inline void Quad::coords(Vector<2> x, Vector<2> y, Vector<2> z, Vector<2> w)
 {
-  s.x(v);
-  t.x(v);
-}
-
-inline void Quad::y(Vector<2> v)
-{
-  s.y(v);
-}
-
-inline void Quad::z(Vector<2> v)
-{
-  s.z(v);
-  t.y(v);
-}
-
-inline void Quad::w(Vector<2> v)
-{
-  t.z(v);
+  s.coords(x, y, z);
+  t.coords(x, z, w);
 }
 
 inline void Quad::color(Color c)
 {
   s.color(c);
   t.color(c);
+}
+
+inline Rectangle::Rectangle(Container *p)
+  : Container(p),
+    q(this)
+{}
+
+inline void Rectangle::coords(Vector<2> llcorner, Vector<2> urcorner)
+{
+  q.coords(Vector2(llcorner[0], llcorner[1]),
+           Vector2(urcorner[0], llcorner[1]),
+           Vector2(urcorner[0], urcorner[1]),
+           Vector2(llcorner[0], urcorner[1]));
+}
+
+inline void Rectangle::color(Color c)
+{
+  q.color(c);
 }
 
 /*
