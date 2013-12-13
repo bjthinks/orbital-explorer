@@ -170,6 +170,32 @@ private:
   Quad q;
 };
 
+// A Box is a hollow rectangle
+
+class Box : public Container
+{
+public:
+  Box(Container *p);
+  void coords(Vector<2> llcorner, Vector<2> urcorner, double width = 1.0);
+  void color(Color c);
+
+private:
+  Rectangle left, right, bottom, top;
+};
+
+// A Border is always drawn just inside the viewport.
+
+class Border : public Container
+{
+public:
+  Border(Container *p);
+  void color(Color c);
+  void draw(Frameview view);
+
+private:
+  Box box;
+};
+
 // Implementations of "simple" functions follow.
 
 inline Frame::Frame(Container *p)
@@ -260,69 +286,41 @@ inline void Rectangle::color(Color c)
   q.color(c);
 }
 
-/*
-// A Window is a Container which restricts the viewable area.
+inline Box::Box(Container *p)
+  : Container(p),
+    left(this), right(this), bottom(this), top(this)
+{}
 
-class Window : public Container
+inline void Box::coords(Vector<2> llcorner, Vector<2> urcorner, double width)
 {
-public:
-  Window(Window *p)
-    : Frame(p),
-      left_offset(0),
-      bottom_offset(0),
-      my_width(0),
-      my_height(0)
-  {
-    if (parent) {
-      my_width = parent->width();
-      my_height = parent->height();
-    }
-  }
-  ~Window()
-  {
-  }
+  left.coords(llcorner, Vector2(llcorner[0]+width, urcorner[1]));
+  right.coords(Vector2(urcorner[0]-width, llcorner[1]), urcorner);
+  bottom.coords(llcorner, Vector2(urcorner[0], llcorner[1]+width));
+  top.coords(Vector2(llcorner[0], urcorner[1]-width), urcorner);
+}
 
-  void moveto(int new_left, int new_bottom)
-  {
-    left_offset = new_left;
-    bottom_offset = new_bottom;
-  }
-  int left()
-  {
-    if (parent)
-      return left_offset + parent->left();
-    else
-      return left_offset;
-  }
-  int bottom()
-  {
-    if (parent)
-      return bottom_offset + parent->bottom();
-    else
-      return bottom_offset;
-  }
-  void resize(int new_width, int new_height)
-  {
-    my_width = new_width;
-    my_height = new_height;
-  }
-  int width()
-  {
-    return my_width;
-  }
-  int height()
-  {
-    return my_height;
-  }
+inline void Box::color(Color c)
+{
+  left.color(c);
+  right.color(c);
+  bottom.color(c);
+  top.color(c);
+}
 
-protected:
+inline Border::Border(Container *p)
+  : Container(p),
+    box(this)
+{}
 
-private:
-  int left_offset;
-  int bottom_offset;
-  int my_width;
-  int my_height;
-};
-*/
+inline void Border::color(Color c)
+{
+  box.color(c);
+}
+
+inline void Border::draw(Frameview view)
+{
+  box.coords(Vector2(0, 0), Vector2(view.width, view.height));
+  Container::draw(view);
+}
 
 #endif

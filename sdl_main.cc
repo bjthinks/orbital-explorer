@@ -150,6 +150,11 @@ static int go()
   bool show_controls = true;
 
   Window ui(NULL, Frameview(0, 0, 16, 16));
+  Border bord(&ui);
+  bord.color(blue);
+  Box box(&ui);
+  box.coords(Vector2(4, 4), Vector2(12, 12));
+  box.color(white);
   Triangle tri(&ui);
   tri.coords(Vector2(8, 8), Vector2(8, 0), Vector2(0, 8));
   tri.color(green);
