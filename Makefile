@@ -46,6 +46,9 @@ $(PROG): $(OFILES)
 $(TEST): unittests.o
 	$(CXX) $(CXXFLAGS) unittests.o -o $@ $(LINKFLAGS) -lgtest -lgtest_main
 
+bin2string: bin2string.o
+	$(CXX) $(CXXFLAGS) bin2string.o -o $@ $(LINKFLAGS)
+
 %.o: %.cc
 	$(CXX) $(CXXFLAGS) -MMD -MP -MF $(<:%.cc=.%.d) -c $<
 
