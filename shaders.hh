@@ -46,12 +46,12 @@
 #ifndef SHADERS_HH
 #define SHADERS_HH
 
-extern const char *solidVertexShaderSource;
-extern const char *solidFragmentShaderSource;
-extern const char *cloudVertexShaderSource;
-extern const char *cloudGeometryShaderSource;
-extern const char *cloudFragmentShaderSource;
-extern const char *finalVertexShaderSource;
-extern const char *finalFragmentShaderSource;
+extern const char solidVertexShaderSource[];
+extern const char solidFragmentShaderSource[];
+extern const char cloudVertexShaderSource[];
+extern const char cloudGeometryShaderSource[];
+extern const char cloudFragmentShaderSource[];
+extern const char finalVertexShaderSource[];
+extern const char finalFragmentShaderSource[];
 
 #endif

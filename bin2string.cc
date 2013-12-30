@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     return 1;
   }
 
-  printf("const char %s[] = {", argv[1]);
+  printf("extern const char %s[] = {", argv[1]);
   int c;
   while ((c = getchar()) != EOF)
     out(c);

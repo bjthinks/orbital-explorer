@@ -52,7 +52,7 @@ bin2string: bin2string.o
 %.o: %.cc
 	$(CXX) $(CXXFLAGS) -MMD -MP -MF $(<:%.cc=.%.d) -c $<
 
-shaders.cc: *.vert *.geom *.frag
+shaders.cc: *.vert *.geom *.frag bin2string
 	rm -f shaders.cc
 	for shader in *.vert *.geom *.frag ; do \
 	  ./wrap_shader.sh $$shader >> shaders.cc ; \
@@ -64,11 +64,11 @@ radial_data.cc: radial_analyzer.py
 
 .PHONY: clean
 clean:
-	rm -f *~ *.o $(PROG) $(TEST)
+	rm -f *~ *.o $(PROG) $(TEST) bin2string shaders.cc
 
 .PHONY: cleanall
 cleanall: clean
-	rm -f .*.d shaders.cc radial_data.cc
+	rm -f .*.d radial_data.cc
 
 # Import dependences
 -include $(OFILES:%.o=.%.d)
