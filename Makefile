@@ -65,6 +65,8 @@ radial_data.cc: radial_analyzer.py
 FONT = SourceSansPro-Regular.ttf
 font_data.cc: $(FONT) bin2string
 	rm -f font_data.cc
+	python3 -B print_license.py >> font_data.cc
+	echo >> font_data.cc
 	echo '#include "font_data.hh"' >> font_data.cc
 	echo >> font_data.cc
 	./bin2string font_data unsigned < $(FONT) >> font_data.cc
