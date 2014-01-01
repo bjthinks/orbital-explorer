@@ -62,12 +62,20 @@ radial_data.cc: radial_analyzer.py
 	rm -f radial_data.cc
 	python3 -B radial_analyzer.py > radial_data.cc
 
-font: font.cc
-	g++ -Wall -O3 `freetype-config --cflags` font.cc -o font `freetype-config --libs`
+FONT = SourceSansPro-Regular.ttf
+font_data.cc: $(FONT) bin2string
+	rm -f font_data.cc
+	echo '#include "font_data.hh"' >> font_data.cc
+	echo >> font_data.cc
+	./bin2string font_data unsigned < $(FONT) >> font_data.cc
+	echo 'extern const size_t font_data_size = sizeof(font_data);' >> font_data.cc
+
+font: font.cc font_data.o
+	g++ -Wall -O3 `freetype-config --cflags` font.cc font_data.o -o font `freetype-config --libs`
 
 .PHONY: clean
 clean:
-	rm -f *~ *.o $(PROG) $(TEST) bin2string shaders.cc
+	rm -f *~ *.o $(PROG) $(TEST) bin2string shaders.cc font_data.cc
 
 .PHONY: cleanall
 cleanall: clean

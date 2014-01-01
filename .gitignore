@@ -3,6 +3,7 @@
 .*.d
 shaders.cc
 radial_data.cc
+font_data.cc
 orbital-explorer
 unittests
 bin2string
