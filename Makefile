@@ -62,6 +62,9 @@ radial_data.cc: radial_analyzer.py
 	rm -f radial_data.cc
 	python3 -B radial_analyzer.py > radial_data.cc
 
+font: font.cc
+	g++ -Wall -O3 `freetype-config --cflags` font.cc -o font `freetype-config --libs`
+
 .PHONY: clean
 clean:
 	rm -f *~ *.o $(PROG) $(TEST) bin2string shaders.cc
