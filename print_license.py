@@ -1,49 +1,81 @@
-def print_license():
-    print('/*')
-    print(' * This file is part of the Electron Orbital Explorer. The Electron')
-    print(' * Orbital Explorer is distributed under the Simplified BSD License')
-    print(' * (also called the "BSD 2-Clause License"), in hopes that these')
-    print(' * rendering techniques might be used by other programmers in')
-    print(' * applications such as scientific visualization, video gaming, and so')
-    print(' * on. If you find value in this software and use its technologies for')
-    print(' * another purpose, I would love to hear back from you at bjthinks (at)')
-    print(' * gmail (dot) com. If you improve this software and agree to release')
-    print(' * your modifications under the below license, I encourage you to fork')
-    print(' * the development tree on github and push your modifications. The')
-    print(' * Electron Orbital Explorer\'s development URL is:')
-    print(' * https://github.com/bjthinks/orbital-explorer')
-    print(' * (This paragraph is not part of the software license and may be')
-    print(' * removed.)')
-    print(' *')
-    print(' * Copyright (c) 2013, Brian W. Johnson')
-    print(' * All rights reserved.')
-    print(' *')
-    print(' * Redistribution and use in source and binary forms, with or without')
-    print(' * modification, are permitted provided that the following conditions')
-    print(' * are met:')
-    print(' *')
-    print(' * + Redistributions of source code must retain the above copyright')
-    print(' *   notice, this list of conditions and the following disclaimer.')
-    print(' *')
-    print(' * + Redistributions in binary form must reproduce the above copyright')
-    print(' *   notice, this list of conditions and the following disclaimer in')
-    print(' *   the documentation and/or other materials provided with the')
-    print(' *   distribution.')
-    print(' *')
-    print(' * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS')
-    print(' * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT')
-    print(' * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS')
-    print(' * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE')
-    print(' * COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,')
-    print(' * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,')
-    print(' * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;')
-    print(' * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER')
-    print(' * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT')
-    print(' * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN')
-    print(' * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE')
-    print(' * POSSIBILITY OF SUCH DAMAGE.')
-    print(' */')
+from sys import argv
+
+
+def print_license(style = 'c'):
+    license_text = [
+        'This file is part of the Electron Orbital Explorer. The Electron',
+        'Orbital Explorer is distributed under the Simplified BSD License',
+        '(also called the "BSD 2-Clause License"), in hopes that these',
+        'rendering techniques might be used by other programmers in',
+        'applications such as scientific visualization, video gaming, and so',
+        'on. If you find value in this software and use its technologies for',
+        'another purpose, I would love to hear back from you at bjthinks (at)',
+        'gmail (dot) com. If you improve this software and agree to release',
+        'your modifications under the below license, I encourage you to fork',
+        'the development tree on github and push your modifications. The',
+        'Electron Orbital Explorer\'s development URL is:',
+        'https://github.com/bjthinks/orbital-explorer',
+        '(This paragraph is not part of the software license and may be',
+        'removed.)',
+        '',
+        'Copyright (c) 2013, Brian W. Johnson',
+        'All rights reserved.',
+        '',
+        'Redistribution and use in source and binary forms, with or without',
+        'modification, are permitted provided that the following conditions',
+        'are met:',
+        '',
+        '+ Redistributions of source code must retain the above copyright',
+        '  notice, this list of conditions and the following disclaimer.',
+        '',
+        '+ Redistributions in binary form must reproduce the above copyright',
+        '  notice, this list of conditions and the following disclaimer in',
+        '  the documentation and/or other materials provided with the',
+        '  distribution.',
+        '',
+        'THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS',
+        '"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT',
+        'LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS',
+        'FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE',
+        'COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,',
+        'INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,',
+        'BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;',
+        'LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER',
+        'CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT',
+        'LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN',
+        'ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE',
+        'POSSIBILITY OF SUCH DAMAGE.',
+    ]
+
+    header = ''
+    prefix = ''
+    truncated_prefix = ''
+    footer = ''
+    if style == 'c':
+        header = '/*'
+        prefix = ' * '
+        truncated_prefix = ' *'
+        footer = ' */'
+    elif style == 'shell':
+        prefix = '# '
+        truncated_prefix = '#'
+    else:
+        # print as plain text
+        pass
+
+    if header != '':
+        print(header)
+    for s in license_text:
+        if s != '':
+            print('{0}{1}'.format(prefix, s))
+        else:
+            print(truncated_prefix)
+    if footer != '':
+        print(footer)
 
 
 if __name__ == '__main__':
-    print_license()
+    if len(argv) > 1:
+        print_license(argv[1])
+    else:
+        print_license()
