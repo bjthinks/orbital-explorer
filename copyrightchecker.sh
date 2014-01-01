@@ -47,7 +47,7 @@ cat << EOF > expected_copyright
  */
 EOF
 
-source_files=`find . '(' -name '*.cc' -o -name '*.hh' -o -name '*.vert' -o -name '*.geom' -o -name '*.frag' ')' -a -not -name shaders.cc`
+source_files=`find . '(' -name '*.cc' -o -name '*.hh' -o -name '*.vert' -o -name '*.geom' -o -name '*.frag' ')'`
 
 for file in $source_files
 do

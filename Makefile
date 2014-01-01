@@ -54,6 +54,8 @@ bin2string: bin2string.o
 
 shaders.cc: *.vert *.geom *.frag bin2string
 	rm -f shaders.cc
+	python3 -B print_license.py >> shaders.cc
+	echo >> shaders.cc
 	for shader in *.vert *.geom *.frag ; do \
 	  ./wrap_shader.sh $$shader >> shaders.cc ; \
 	done
