@@ -54,7 +54,7 @@ bin2string: bin2string.o
 
 shaders.cc: *.vert *.geom *.frag bin2string
 	rm -f shaders.cc
-	python3 -B print_license.py >> shaders.cc
+	python3 -B license.py c >> shaders.cc
 	echo >> shaders.cc
 	for shader in *.vert *.geom *.frag ; do \
 	  ./wrap_shader.sh $$shader >> shaders.cc ; \
@@ -67,7 +67,7 @@ radial_data.cc: radial_analyzer.py
 FONT = SourceSansPro-Regular.ttf
 font_data.cc: $(FONT) bin2string
 	rm -f font_data.cc
-	python3 -B print_license.py >> font_data.cc
+	python3 -B license.py c >> font_data.cc
 	echo >> font_data.cc
 	echo '#include "font_data.hh"' >> font_data.cc
 	echo >> font_data.cc

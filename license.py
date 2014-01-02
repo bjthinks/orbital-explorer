@@ -1,7 +1,7 @@
 from sys import argv
 
 
-def print_license(style = 'c'):
+def license(style):
     license_text = [
         'This file is part of the Electron Orbital Explorer. The Electron',
         'Orbital Explorer is distributed under the Simplified BSD License',
@@ -47,35 +47,37 @@ def print_license(style = 'c'):
         'POSSIBILITY OF SUCH DAMAGE.',
     ]
 
-    header = ''
+    header = []
     prefix = ''
     truncated_prefix = ''
-    footer = ''
+    footer = []
     if style == 'c':
-        header = '/*'
+        header = ['/*']
         prefix = ' * '
         truncated_prefix = ' *'
-        footer = ' */'
+        footer = [' */']
     elif style == 'shell':
+        header = ['#!/bin/sh', '#']
         prefix = '# '
         truncated_prefix = '#'
     else:
         # print as plain text
         pass
 
-    if header != '':
-        print(header)
+    prefixed_license_text = []
     for s in license_text:
-        if s != '':
-            print('{0}{1}'.format(prefix, s))
+        if s == '':
+            prefixed_license_text.append(truncated_prefix)
         else:
-            print(truncated_prefix)
-    if footer != '':
-        print(footer)
+            prefixed_license_text.append(prefix + s)
+
+    return header + prefixed_license_text + footer
 
 
 if __name__ == '__main__':
     if len(argv) > 1:
-        print_license(argv[1])
+        style = argv[1]
     else:
-        print_license()
+        style = 'text'
+    for s in license(style):
+        print(s)

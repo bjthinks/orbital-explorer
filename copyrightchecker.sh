@@ -1,6 +1,6 @@
 #!/bin/sh
 
-python3 -B print_license.py c > expected_copyright
+python3 -B license.py c > expected_copyright
 
 source_files=`find . '(' -name '*.cc' -o -name '*.hh' -o -name '*.vert' -o -name '*.geom' -o -name '*.frag' ')'`
 
@@ -11,7 +11,7 @@ do
     diff expected_copyright extracted_copyright
 done
 
-python3 -B print_license.py shell > expected_copyright
+python3 -B license.py shell > expected_copyright
 
 source_files="Makefile `find . '(' -name '*.sh' -o -name '*.py' ')'`"
 

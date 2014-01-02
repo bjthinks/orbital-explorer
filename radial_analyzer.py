@@ -44,7 +44,7 @@
 
 import numbers
 from math import exp, sqrt
-from print_license import print_license
+from license import license
 
 
 class Polynomial:
@@ -452,7 +452,8 @@ def radial_integral2(n, L):
 
 
 if __name__ == '__main__':
-    print_license()
+    for s in license('c'):
+        print(s)
     print('')
     print('#include "radial_data.hh"')
     print('')
