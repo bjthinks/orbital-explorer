@@ -52,7 +52,7 @@ bin2string: bin2string.o
 %.o: %.cc
 	$(CXX) $(CXXFLAGS) -MMD -MP -MF $(<:%.cc=.%.d) -c $<
 
-shaders.cc: *.vert *.geom *.frag bin2string
+shaders.cc: *.vert *.geom *.frag license.py wrap_shader.sh bin2string
 	rm -f shaders.cc
 	python3 -B license.py c >> shaders.cc
 	echo >> shaders.cc
@@ -60,12 +60,12 @@ shaders.cc: *.vert *.geom *.frag bin2string
 	  ./wrap_shader.sh $$shader >> shaders.cc ; \
 	done
 
-radial_data.cc: radial_analyzer.py
+radial_data.cc: radial_analyzer.py license.py
 	rm -f radial_data.cc
 	python3 -B radial_analyzer.py > radial_data.cc
 
 FONT = SourceSansPro-Regular.ttf
-font_data.cc: $(FONT) bin2string
+font_data.cc: $(FONT) license.py bin2string
 	rm -f font_data.cc
 	python3 -B license.py c >> font_data.cc
 	echo >> font_data.cc
@@ -79,11 +79,11 @@ font: font.cc font_data.o
 
 .PHONY: clean
 clean:
-	rm -f *~ *.o $(PROG) $(TEST) bin2string shaders.cc font_data.cc
+	rm -f *~ *.o $(PROG) $(TEST) bin2string
 
 .PHONY: cleanall
 cleanall: clean
-	rm -f .*.d radial_data.cc
+	rm -f .*.d font_data.cc radial_data.cc shaders.cc
 
 # Import dependences
 -include $(OFILES:%.o=.%.d)
