@@ -73,9 +73,33 @@ public:
     error = FT_Set_Char_Size(face, 0, pixels * 64, 72, 72);
     if (error)
       throw "Could not set font size";
+
+    // Determine some size data
+    minLeft = 0;
+    maxRight = 0;
+    maxWidth = 0;
+    minBottom = 0;
+    maxTop = 0;
+    maxHeight = 0;
+    for (int c = 0; c < 128; ++c) {
+      setGlyph(c);
+      if (getGlyphLeft() < minLeft)
+        minLeft = getGlyphLeft();
+      if (getGlyphRight() > maxRight)
+        maxRight = getGlyphRight();
+      if (getGlyphWidth() > maxWidth)
+        maxWidth = getGlyphWidth();
+      if (getGlyphBottom() < minBottom)
+        minBottom = getGlyphBottom();
+      if (getGlyphTop() > maxTop)
+        maxTop = getGlyphTop();
+      if (getGlyphHeight() > maxHeight)
+        maxHeight = getGlyphHeight();
+    }
   }
 
   FT_Face face;
+  int minLeft, maxRight, maxWidth, minBottom, maxTop, maxHeight;
 
   void setGlyph(int c)
   {
@@ -95,9 +119,9 @@ public:
     return face->glyph->bitmap_left;
   }
 
-  int getGlyphTop()
+  int getGlyphRight()
   {
-    return face->glyph->bitmap_top;
+    return getGlyphLeft() + getGlyphWidth();
   }
 
   int getGlyphWidth()
@@ -105,7 +129,17 @@ public:
     return face->glyph->bitmap.width;
   }
 
-  int getGlyphRows()
+  int getGlyphBottom()
+  {
+    return getGlyphTop() - getGlyphHeight();
+  }
+
+  int getGlyphTop()
+  {
+    return face->glyph->bitmap_top;
+  }
+
+  int getGlyphHeight()
   {
     return face->glyph->bitmap.rows;
   }
@@ -127,13 +161,20 @@ try {
   if (argc <= 1)
     throw "Usage: font <character>";
 
-  Font font(24);
+  Font font(36);
+
+  printf("Min left = %d\n", font.minLeft);
+  printf("Max right = %d\n", font.maxRight);
+  printf("Max width = %d\n", font.maxWidth);
+  printf("Min bottom = %d\n", font.minBottom);
+  printf("Max top = %d\n", font.maxTop);
+  printf("Max height = %d\n", font.maxHeight);
 
   font.setGlyph(argv[1][0]);
 
   printf("left = %d top = %d width = %d height = %d\n",
          font.getGlyphLeft(), font.getGlyphTop(),
-         font.getGlyphWidth(), font.getGlyphRows());
+         font.getGlyphWidth(), font.getGlyphHeight());
   printf("advance = %d\n", font.getGlyphAdvance());
 
   FT_Bitmap &bitmap = font.face->glyph->bitmap;
