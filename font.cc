@@ -77,7 +77,7 @@ public:
 
   FT_Face face;
 
-  void setGlyph(char c)
+  void setGlyph(int c)
   {
     int glyph_index = FT_Get_Char_Index(face, c);
 
@@ -88,6 +88,31 @@ public:
     error = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
     if (error)
       throw "Could not render glyph";
+  }
+
+  int getGlyphLeft()
+  {
+    return face->glyph->bitmap_left;
+  }
+
+  int getGlyphTop()
+  {
+    return face->glyph->bitmap_top;
+  }
+
+  int getGlyphWidth()
+  {
+    return face->glyph->bitmap.width;
+  }
+
+  int getGlyphRows()
+  {
+    return face->glyph->bitmap.rows;
+  }
+
+  int getGlyphAdvance()
+  {
+    return face->glyph->advance.x / 64;
   }
 
 private:
@@ -107,9 +132,9 @@ try {
   font.setGlyph(argv[1][0]);
 
   printf("left = %d top = %d width = %d height = %d\n",
-         font.face->glyph->bitmap_left, font.face->glyph->bitmap_top,
-         font.face->glyph->bitmap.width, font.face->glyph->bitmap.rows);
-  printf("advance = %d\n", int(font.face->glyph->advance.x) / 64);
+         font.getGlyphLeft(), font.getGlyphTop(),
+         font.getGlyphWidth(), font.getGlyphRows());
+  printf("advance = %d\n", font.getGlyphAdvance());
 
   FT_Bitmap &bitmap = font.face->glyph->bitmap;
   for (int i = 0; i < bitmap.rows; ++i) {
