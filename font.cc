@@ -77,6 +77,19 @@ public:
 
   FT_Face face;
 
+  void setGlyph(char c)
+  {
+    int glyph_index = FT_Get_Char_Index(face, c);
+
+    int error = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
+    if (error)
+      throw "Could not load glyph";
+
+    error = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
+    if (error)
+      throw "Could not render glyph";
+  }
+
 private:
   static bool initialized;
   static FT_Library library;
@@ -91,32 +104,12 @@ try {
 
   Font font(24);
 
-  int glyph_index_A = FT_Get_Char_Index(font.face, argv[1][0]);
-  printf("Glyph index of A is %d\n", glyph_index_A);
-
-  int error = FT_Load_Glyph(font.face,              // handle to face object
-                            glyph_index_A,     // glyph index
-                            FT_LOAD_DEFAULT);  // load flags
-  if (error)
-    throw "Could not load glyph of A";
-
-  error = FT_Render_Glyph(font.face->glyph,             // glyph slot
-                          FT_RENDER_MODE_NORMAL);  // render mode
-  if (error)
-    throw "Could not render A";
-  printf("A has been rendered\n");
+  font.setGlyph(argv[1][0]);
 
   printf("left = %d top = %d width = %d height = %d\n",
          font.face->glyph->bitmap_left, font.face->glyph->bitmap_top,
          font.face->glyph->bitmap.width, font.face->glyph->bitmap.rows);
-  printf("advance = %f\n", double(font.face->glyph->advance.x) / 64.0);
-  printf("metrics:\n");
-  printf("left = %f top = %f width = %f height = %f\n",
-         double(font.face->glyph->metrics.horiBearingX) / 64.0,
-         double(font.face->glyph->metrics.horiBearingY) / 64.0,
-         double(font.face->glyph->metrics.width) / 64.0,
-         double(font.face->glyph->metrics.height) / 64.0);
-  printf("advance = %f\n", double(font.face->glyph->metrics.horiAdvance) / 64.0);
+  printf("advance = %d\n", int(font.face->glyph->advance.x) / 64);
 
   FT_Bitmap &bitmap = font.face->glyph->bitmap;
   for (int i = 0; i < bitmap.rows; ++i) {
