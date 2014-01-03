@@ -43,6 +43,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <vector>
+#include <cctype>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
@@ -54,7 +56,7 @@
 class Font
 {
 public:
-  Font(int pixels)
+  Font(int points)
   {
     if (!initialized) {
       int error = FT_Init_FreeType(&library);
@@ -70,7 +72,7 @@ public:
     else if (error)
       throw "Can\'t read font file";
 
-    error = FT_Set_Char_Size(face, 0, pixels * 64, 72, 72);
+    error = FT_Set_Char_Size(face, 0, points * 64, 72, 72);
     if (error)
       throw "Could not set font size";
 
@@ -81,8 +83,9 @@ public:
     minBottom = 0;
     maxTop = 0;
     maxHeight = 0;
-    for (int c = 0; c < 128; ++c) {
-      setGlyph(c);
+    maxRightMinusAdvance = 0;
+    for (int ch = 0; ch < 128; ++ch) {
+      setGlyph(ch);
       if (getGlyphLeft() < minLeft)
         minLeft = getGlyphLeft();
       if (getGlyphRight() > maxRight)
@@ -95,11 +98,53 @@ public:
         maxTop = getGlyphTop();
       if (getGlyphHeight() > maxHeight)
         maxHeight = getGlyphHeight();
+      int rma = getGlyphRight() - getGlyphAdvance();
+      if (rma > maxRightMinusAdvance)
+        maxRightMinusAdvance = rma;
     }
+    glyphWidth = maxRight - minLeft;
+    glyphHeight = maxTop - minBottom;
+
+    pixelData.resize(glyphWidth * glyphHeight * 128, 0);
+    advanceData.resize(128);
+
+    for (int ch = 0; ch < 128; ++ch) {
+      setGlyph(ch);
+      const FT_Bitmap &bitmap = face->glyph->bitmap;
+      for (int bitmap_row = 0; bitmap_row < bitmap.rows; ++bitmap_row) {
+        for (int bitmap_col = 0; bitmap_col < bitmap.width; ++bitmap_col) {
+          int p = bitmap.buffer[bitmap_row * bitmap.width + bitmap_col];
+          pixel(ch, maxTop - getGlyphTop() + bitmap_row,
+                getGlyphLeft() - minLeft + bitmap_col) = p;
+        }
+      }
+      advanceData.at(ch) = getGlyphAdvance();
+    }
+  }
+
+  unsigned char &pixel(int ch, int row, int col)
+  {
+    if (ch < 0 || ch >= 128)
+      throw "ch out of range";
+    if (row < 0 || row >= glyphHeight)
+      throw "row out of range";
+    if (col < 0 || col >= glyphWidth)
+      throw "col out of range";
+    return pixelData.at(ch * glyphWidth * glyphHeight +
+                        row * glyphWidth + col);
+  }
+
+  int advance(int ch)
+  {
+    return advanceData.at(ch);
   }
 
   FT_Face face;
   int minLeft, maxRight, maxWidth, minBottom, maxTop, maxHeight;
+  int maxRightMinusAdvance;
+  int glyphWidth, glyphHeight;
+  std::vector<unsigned char> pixelData;
+  std::vector<int> advanceData;
 
   void setGlyph(int c)
   {
@@ -158,9 +203,6 @@ FT_Library Font::library;
 
 int main(int argc, char *argv[])
 try {
-  if (argc <= 1)
-    throw "Usage: font <character>";
-
   Font font(36);
 
   printf("Min left = %d\n", font.minLeft);
@@ -169,20 +211,26 @@ try {
   printf("Min bottom = %d\n", font.minBottom);
   printf("Max top = %d\n", font.maxTop);
   printf("Max height = %d\n", font.maxHeight);
+  printf("Max right minus advance = %d\n", font.maxRightMinusAdvance);
 
-  font.setGlyph(argv[1][0]);
-
-  printf("left = %d top = %d width = %d height = %d\n",
-         font.getGlyphLeft(), font.getGlyphTop(),
-         font.getGlyphWidth(), font.getGlyphHeight());
-  printf("advance = %d\n", font.getGlyphAdvance());
-
-  FT_Bitmap &bitmap = font.face->glyph->bitmap;
-  for (int i = 0; i < bitmap.rows; ++i) {
-    for (int j = 0; j < bitmap.width; ++j) {
-      printf("%3d ", bitmap.buffer[i * bitmap.width + j]);
-    }
+  for (int ch = 0; ch < 128; ++ch) {
     printf("\n");
+    printf("Character %d", ch);
+    if (isprint(ch))
+      printf(" (%c)", ch);
+    printf(", advance %d\n", font.advance(ch));
+    printf("\n");
+    for (int row = 0; row < font.glyphHeight; ++row) {
+      for (int col = 0; col < font.glyphWidth; ++col) {
+          int p = font.pixel(ch, row, col);
+          if      (p >= 192) printf("##");
+          else if (p >= 128) printf("==");
+          else if (p >=  64) printf("++");
+          else if (p >=   1) printf("--");
+          else               printf("..");
+        }
+      printf("\n");
+    }
   }
 
   return 0;
