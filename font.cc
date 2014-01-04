@@ -48,159 +48,104 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+#include "font.hh"
 #include "font_data.hh"
 
-// Note: kerning is not done, because our chosen
-// font (Source Sans Pro) has no kerning data
-
-class Font
+Font::Font(int points)
 {
-public:
-  Font(int points)
-  {
-    if (!initialized) {
-      int error = FT_Init_FreeType(&library);
-      if (error)
-        throw "Could not init Freetype 2";
-      initialized = true;
-    }
-
-    int error = FT_New_Memory_Face(library, font_data, font_data_size,
-                                   0, &face);
-    if (error == FT_Err_Unknown_File_Format)
-      throw "Unknown font file format";
-    else if (error)
-      throw "Can\'t read font file";
-
-    error = FT_Set_Char_Size(face, 0, points * 64, 72, 72);
+  if (!initialized) {
+    int error = FT_Init_FreeType(&library);
     if (error)
-      throw "Could not set font size";
+      throw "Could not init Freetype 2";
+    initialized = true;
+  }
 
-    // Determine some size data
-    minLeft = 0;
-    maxRight = 0;
-    maxWidth = 0;
-    minBottom = 0;
-    maxTop = 0;
-    maxHeight = 0;
-    maxRightMinusAdvance = 0;
-    for (int ch = 0; ch < 128; ++ch) {
-      setGlyph(ch);
-      if (getGlyphLeft() < minLeft)
-        minLeft = getGlyphLeft();
-      if (getGlyphRight() > maxRight)
-        maxRight = getGlyphRight();
-      if (getGlyphWidth() > maxWidth)
-        maxWidth = getGlyphWidth();
-      if (getGlyphBottom() < minBottom)
-        minBottom = getGlyphBottom();
-      if (getGlyphTop() > maxTop)
-        maxTop = getGlyphTop();
-      if (getGlyphHeight() > maxHeight)
-        maxHeight = getGlyphHeight();
-      int rma = getGlyphRight() - getGlyphAdvance();
-      if (rma > maxRightMinusAdvance)
-        maxRightMinusAdvance = rma;
-    }
-    glyphWidth = maxRight - minLeft;
-    glyphHeight = maxTop - minBottom;
+  int error = FT_New_Memory_Face(library, font_data, font_data_size,
+                                 0, &face);
+  if (error == FT_Err_Unknown_File_Format)
+    throw "Unknown font file format";
+  else if (error)
+    throw "Can\'t read font file";
 
-    pixelData.resize(glyphWidth * glyphHeight * 128, 0);
-    advanceData.resize(128);
+  error = FT_Set_Char_Size(face, 0, points * 64, 72, 72);
+  if (error)
+    throw "Could not set font size";
 
-    for (int ch = 0; ch < 128; ++ch) {
-      setGlyph(ch);
-      const FT_Bitmap &bitmap = face->glyph->bitmap;
-      for (int bitmap_row = 0; bitmap_row < bitmap.rows; ++bitmap_row) {
-        for (int bitmap_col = 0; bitmap_col < bitmap.width; ++bitmap_col) {
-          int p = bitmap.buffer[bitmap_row * bitmap.width + bitmap_col];
-          pixel(ch, maxTop - getGlyphTop() + bitmap_row,
-                getGlyphLeft() - minLeft + bitmap_col) = p;
-        }
+  // Determine some size data
+  minLeft = 0;
+  maxRight = 0;
+  maxWidth = 0;
+  minBottom = 0;
+  maxTop = 0;
+  maxHeight = 0;
+  maxRightMinusAdvance = 0;
+  for (int ch = 0; ch < 128; ++ch) {
+    setGlyph(ch);
+    if (getGlyphLeft() < minLeft)
+      minLeft = getGlyphLeft();
+    if (getGlyphRight() > maxRight)
+      maxRight = getGlyphRight();
+    if (getGlyphWidth() > maxWidth)
+      maxWidth = getGlyphWidth();
+    if (getGlyphBottom() < minBottom)
+      minBottom = getGlyphBottom();
+    if (getGlyphTop() > maxTop)
+      maxTop = getGlyphTop();
+    if (getGlyphHeight() > maxHeight)
+      maxHeight = getGlyphHeight();
+    int rma = getGlyphRight() - getGlyphAdvance();
+    if (rma > maxRightMinusAdvance)
+      maxRightMinusAdvance = rma;
+  }
+  glyphWidth = maxRight - minLeft;
+  glyphHeight = maxTop - minBottom;
+
+  pixelData.resize(glyphWidth * glyphHeight * 128, 0);
+  advanceData.resize(128);
+
+  for (int ch = 0; ch < 128; ++ch) {
+    setGlyph(ch);
+    const FT_Bitmap &bitmap = face->glyph->bitmap;
+    for (int bitmap_row = 0; bitmap_row < bitmap.rows; ++bitmap_row) {
+      for (int bitmap_col = 0; bitmap_col < bitmap.width; ++bitmap_col) {
+        int p = bitmap.buffer[bitmap_row * bitmap.width + bitmap_col];
+        pixel(ch, maxTop - getGlyphTop() + bitmap_row,
+              getGlyphLeft() - minLeft + bitmap_col) = p;
       }
-      advanceData.at(ch) = getGlyphAdvance();
     }
+    advanceData.at(ch) = getGlyphAdvance();
   }
+}
 
-  unsigned char &pixel(int ch, int row, int col)
-  {
-    if (ch < 0 || ch >= 128)
-      throw "ch out of range";
-    if (row < 0 || row >= glyphHeight)
-      throw "row out of range";
-    if (col < 0 || col >= glyphWidth)
-      throw "col out of range";
-    return pixelData.at(ch * glyphWidth * glyphHeight +
-                        row * glyphWidth + col);
-  }
+unsigned char &Font::pixel(int ch, int row, int col)
+{
+  if (ch < 0 || ch >= 128)
+    throw "ch out of range";
+  if (row < 0 || row >= glyphHeight)
+    throw "row out of range";
+  if (col < 0 || col >= glyphWidth)
+    throw "col out of range";
+  return pixelData.at(ch * glyphWidth * glyphHeight +
+                      row * glyphWidth + col);
+}
 
-  int advance(int ch)
-  {
-    return advanceData.at(ch);
-  }
+void Font::setGlyph(int c)
+{
+  int glyph_index = FT_Get_Char_Index(face, c);
 
-  FT_Face face;
-  int minLeft, maxRight, maxWidth, minBottom, maxTop, maxHeight;
-  int maxRightMinusAdvance;
-  int glyphWidth, glyphHeight;
-  std::vector<unsigned char> pixelData;
-  std::vector<int> advanceData;
+  int error = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
+  if (error)
+    throw "Could not load glyph";
 
-  void setGlyph(int c)
-  {
-    int glyph_index = FT_Get_Char_Index(face, c);
+  error = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
+  if (error)
+    throw "Could not render glyph";
+}
 
-    int error = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
-    if (error)
-      throw "Could not load glyph";
-
-    error = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
-    if (error)
-      throw "Could not render glyph";
-  }
-
-  int getGlyphLeft()
-  {
-    return face->glyph->bitmap_left;
-  }
-
-  int getGlyphRight()
-  {
-    return getGlyphLeft() + getGlyphWidth();
-  }
-
-  int getGlyphWidth()
-  {
-    return face->glyph->bitmap.width;
-  }
-
-  int getGlyphBottom()
-  {
-    return getGlyphTop() - getGlyphHeight();
-  }
-
-  int getGlyphTop()
-  {
-    return face->glyph->bitmap_top;
-  }
-
-  int getGlyphHeight()
-  {
-    return face->glyph->bitmap.rows;
-  }
-
-  int getGlyphAdvance()
-  {
-    return face->glyph->advance.x / 64;
-  }
-
-private:
-  static bool initialized;
-  static FT_Library library;
-};
 bool Font::initialized = false;
 FT_Library Font::library;
 
+#if 0
 int main(int argc, char *argv[])
 try {
   Font font(36);
@@ -238,3 +183,4 @@ try {
   fprintf(stderr, "%s\n", msg);
   return 1;
 }
+#endif

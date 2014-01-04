@@ -44,8 +44,8 @@
 OPT_OR_DEBUG = -O3
 
 CXX = g++
-CXXFLAGS := -pthread -Wall -Wshadow -Werror $(OPT_OR_DEBUG) $(shell sdl2-config --cflags)
-LINKFLAGS := -pthread -lAntTweakBar $(shell sdl2-config --libs)
+CXXFLAGS := -pthread -Wall -Wshadow -Werror $(OPT_OR_DEBUG) $(shell sdl2-config --cflags) $(shell freetype-config --cflags)
+LINKFLAGS := -pthread -lAntTweakBar $(shell sdl2-config --libs) $(shell freetype-config --libs)
 
 ARCH = $(shell uname -s)
 ifeq ($(ARCH),Linux)
@@ -76,7 +76,9 @@ OFILES=\
 	final.o \
 	glprocs.o \
 	myTwEventSDL20.o \
-	icon.o
+	icon.o \
+	font.o \
+	font_data.o
 
 PROG = orbital-explorer
 TEST = unittests
@@ -116,9 +118,6 @@ font_data.cc: $(FONT) license.py bin2string
 	echo >> font_data.cc
 	./bin2string font_data unsigned < $(FONT) >> font_data.cc
 	echo 'extern const size_t font_data_size = sizeof(font_data);' >> font_data.cc
-
-font: font.cc font_data.o
-	g++ -Wall -O3 `freetype-config --cflags` font.cc font_data.o -o font `freetype-config --libs`
 
 .PHONY: clean
 clean:
