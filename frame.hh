@@ -184,6 +184,8 @@ private:
 };
 
 // A Border is always drawn just inside the viewport.
+// NOTE: This is flawed, because the viewport as received in the draw()
+// call is subject to clipping based on any enclosing viewport.
 
 class Border : public Container
 {
