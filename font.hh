@@ -53,18 +53,18 @@ class Font
 {
 public:
   Font(int points);
-  unsigned char &pixel(int ch, int row, int col);
-  int advance(int ch) { return advanceData.at(ch); }
-  FT_Face face;
-  int minLeft, maxRight, maxWidth, minBottom, maxTop, maxHeight;
-  int maxRightMinusAdvance;
-  int glyphWidth, glyphHeight;
-  std::vector<unsigned char> pixelData;
-  std::vector<int> advanceData;
+  const unsigned char &pixel(int ch, int row, int col) const;
+  const unsigned char *pixels() const { return &pixelData[0]; }
+  int advance(int ch) const { return advanceData.at(ch); }
+  int cellWidth() const { return cellWidth_; }
+  int cellHeight() const { return cellHeight_; }
+  int leftMargin() const {return std::max(0, -minLeft); }
+  int rightMargin() const { return std::max(0, maxRightMinusAdvance); }
 
 private:
   static bool initialized;
   static FT_Library library;
+  FT_Face face;
   void setGlyph(int c);
   int getGlyphLeft()    { return face->glyph->bitmap_left; }
   int getGlyphRight()   { return getGlyphLeft() + getGlyphWidth(); }
@@ -73,6 +73,13 @@ private:
   int getGlyphTop()     { return face->glyph->bitmap_top; }
   int getGlyphHeight()  { return face->glyph->bitmap.rows; }
   int getGlyphAdvance() { return face->glyph->advance.x / 64; }
+
+  std::vector<unsigned char> pixelData;
+  std::vector<int> advanceData;
+  int minLeft, maxRight, maxWidth, minBottom, maxTop, maxHeight;
+  int maxRightMinusAdvance;
+  int cellWidth_, cellHeight_;
+  unsigned char &pixelRW(int ch, int row, int col);
 };
 
 #endif

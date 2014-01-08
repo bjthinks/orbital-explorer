@@ -97,10 +97,10 @@ Font::Font(int points)
     if (rma > maxRightMinusAdvance)
       maxRightMinusAdvance = rma;
   }
-  glyphWidth = maxRight - minLeft;
-  glyphHeight = maxTop - minBottom;
+  cellWidth_ = maxRight - minLeft;
+  cellHeight_ = maxTop - minBottom;
 
-  pixelData.resize(glyphWidth * glyphHeight * 128, 0);
+  pixelData.resize(cellWidth() * cellHeight() * 128, 0);
   advanceData.resize(128);
 
   for (int ch = 0; ch < 128; ++ch) {
@@ -109,24 +109,36 @@ Font::Font(int points)
     for (int bitmap_row = 0; bitmap_row < bitmap.rows; ++bitmap_row) {
       for (int bitmap_col = 0; bitmap_col < bitmap.width; ++bitmap_col) {
         int p = bitmap.buffer[bitmap_row * bitmap.width + bitmap_col];
-        pixel(ch, maxTop - getGlyphTop() + bitmap_row,
-              getGlyphLeft() - minLeft + bitmap_col) = p;
+        pixelRW(ch, maxTop - getGlyphTop() + bitmap_row,
+                getGlyphLeft() - minLeft + bitmap_col) = p;
       }
     }
     advanceData.at(ch) = getGlyphAdvance();
   }
 }
 
-unsigned char &Font::pixel(int ch, int row, int col)
+const unsigned char &Font::pixel(int ch, int row, int col) const
 {
   if (ch < 0 || ch >= 128)
     throw "ch out of range";
-  if (row < 0 || row >= glyphHeight)
+  if (row < 0 || row >= cellHeight())
     throw "row out of range";
-  if (col < 0 || col >= glyphWidth)
+  if (col < 0 || col >= cellWidth())
     throw "col out of range";
-  return pixelData.at(ch * glyphWidth * glyphHeight +
-                      row * glyphWidth + col);
+  return pixelData.at(ch * cellWidth() * cellHeight() +
+                      row * cellWidth() + col);
+}
+
+unsigned char &Font::pixelRW(int ch, int row, int col)
+{
+  if (ch < 0 || ch >= 128)
+    throw "ch out of range";
+  if (row < 0 || row >= cellHeight())
+    throw "row out of range";
+  if (col < 0 || col >= cellWidth())
+    throw "col out of range";
+  return pixelData.at(ch * cellWidth() * cellHeight() +
+                      row * cellWidth() + col);
 }
 
 void Font::setGlyph(int c)
@@ -165,8 +177,8 @@ try {
       printf(" (%c)", ch);
     printf(", advance %d\n", font.advance(ch));
     printf("\n");
-    for (int row = 0; row < font.glyphHeight; ++row) {
-      for (int col = 0; col < font.glyphWidth; ++col) {
+    for (int row = 0; row < font.cellHeight(); ++row) {
+      for (int col = 0; col < font.cellWidth(); ++col) {
           int p = font.pixel(ch, row, col);
           if      (p >= 192) printf("##");
           else if (p >= 128) printf("==");
