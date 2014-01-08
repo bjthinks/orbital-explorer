@@ -167,7 +167,8 @@ void display(const Viewport &viewport, const Camera &camera)
   GetGLError();
 
   double near = 1.0;
-  double far = camera.getRadius() + orbital->radius() * sqrt(2.0);
+  double far =
+    camera.getRadius() + std::max(1.0, (orbital->radius())) * sqrt(3.0);
   Matrix<4,4> viewMatrix = camera.viewMatrix();
   Matrix<4,4> mvpm = viewport.projMatrix(near, far) * viewMatrix;
   Vector<4> camera_position = inverse(viewMatrix) * basisVector<4>(3);
