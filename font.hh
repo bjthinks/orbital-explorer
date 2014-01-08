@@ -46,6 +46,8 @@
 #ifndef FONT_HH
 #define FONT_HH
 
+#include "glprocs.hh"
+
 // Note: kerning is not done, because our chosen
 // font (Source Sans Pro) has no kerning data
 
@@ -53,8 +55,8 @@ class Font
 {
 public:
   Font(int points);
+  ~Font();
   const unsigned char &pixel(int ch, int row, int col) const;
-  const unsigned char *pixels() const { return &pixelData[0]; }
   int advance(int ch) const { return advanceData.at(ch); }
   int cellWidth() const { return cellWidth_; }
   int cellHeight() const { return cellHeight_; }
@@ -76,10 +78,13 @@ private:
 
   std::vector<unsigned char> pixelData;
   std::vector<int> advanceData;
-  int minLeft, maxRight, maxWidth, minBottom, maxTop, maxHeight;
+  int minLeft, maxRight, maxWidth;
+  int minBottom, maxTop, maxHeight;
   int maxRightMinusAdvance;
   int cellWidth_, cellHeight_;
   unsigned char &pixelRW(int ch, int row, int col);
+
+  GLuint texture_id;
 };
 
 #endif

@@ -115,6 +115,16 @@ Font::Font(int points)
     }
     advanceData.at(ch) = getGlyphAdvance();
   }
+
+  glGenTextures(1, &texture_id);
+  glBindTexture(GL_TEXTURE_2D, texture_id);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, cellWidth(), 128 * cellHeight(),
+               0, GL_RED, GL_UNSIGNED_BYTE, &pixelData[0]);
+}
+
+Font::~Font()
+{
+  glDeleteTextures(1, &texture_id);
 }
 
 const unsigned char &Font::pixel(int ch, int row, int col) const
@@ -156,43 +166,3 @@ void Font::setGlyph(int c)
 
 bool Font::initialized = false;
 FT_Library Font::library;
-
-#if 0
-int main(int argc, char *argv[])
-try {
-  Font font(36);
-
-  printf("Min left = %d\n", font.minLeft);
-  printf("Max right = %d\n", font.maxRight);
-  printf("Max width = %d\n", font.maxWidth);
-  printf("Min bottom = %d\n", font.minBottom);
-  printf("Max top = %d\n", font.maxTop);
-  printf("Max height = %d\n", font.maxHeight);
-  printf("Max right minus advance = %d\n", font.maxRightMinusAdvance);
-
-  for (int ch = 0; ch < 128; ++ch) {
-    printf("\n");
-    printf("Character %d", ch);
-    if (isprint(ch))
-      printf(" (%c)", ch);
-    printf(", advance %d\n", font.advance(ch));
-    printf("\n");
-    for (int row = 0; row < font.cellHeight(); ++row) {
-      for (int col = 0; col < font.cellWidth(); ++col) {
-          int p = font.pixel(ch, row, col);
-          if      (p >= 192) printf("##");
-          else if (p >= 128) printf("==");
-          else if (p >=  64) printf("++");
-          else if (p >=   1) printf("--");
-          else               printf("..");
-        }
-      printf("\n");
-    }
-  }
-
-  return 0;
-} catch (const char *msg) {
-  fprintf(stderr, "%s\n", msg);
-  return 1;
-}
-#endif
