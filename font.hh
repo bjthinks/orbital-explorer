@@ -43,17 +43,48 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SHADERS_HH
-#define SHADERS_HH
+#ifndef FONT_HH
+#define FONT_HH
 
-extern const char triangleVertexShaderSource[];
-extern const char triangleFragmentShaderSource[];
-extern const char solidVertexShaderSource[];
-extern const char solidFragmentShaderSource[];
-extern const char cloudVertexShaderSource[];
-extern const char cloudGeometryShaderSource[];
-extern const char cloudFragmentShaderSource[];
-extern const char finalVertexShaderSource[];
-extern const char finalFragmentShaderSource[];
+#include "glprocs.hh"
+
+// Note: kerning is not done, because our chosen
+// font (Source Sans Pro) has no kerning data
+
+class Font
+{
+public:
+  Font(int points);
+  ~Font();
+  const unsigned char &pixel(int ch, int row, int col) const;
+  int advance(int ch) const { return advanceData.at(ch); }
+  int cellWidth() const { return cellWidth_; }
+  int cellHeight() const { return cellHeight_; }
+  int leftMargin() const {return std::max(0, -minLeft); }
+  int rightMargin() const { return std::max(0, maxRightMinusAdvance); }
+
+private:
+  static bool initialized;
+  static FT_Library library;
+  FT_Face face;
+  void setGlyph(int c);
+  int getGlyphLeft()    { return face->glyph->bitmap_left; }
+  int getGlyphRight()   { return getGlyphLeft() + getGlyphWidth(); }
+  int getGlyphWidth()   { return face->glyph->bitmap.width; }
+  int getGlyphBottom()  { return getGlyphTop() - getGlyphHeight(); }
+  int getGlyphTop()     { return face->glyph->bitmap_top; }
+  int getGlyphHeight()  { return face->glyph->bitmap.rows; }
+  int getGlyphAdvance() { return face->glyph->advance.x / 64; }
+
+  std::vector<unsigned char> pixelData;
+  std::vector<int> advanceData;
+  int minLeft, maxRight, maxWidth;
+  int minBottom, maxTop, maxHeight;
+  int maxRightMinusAdvance;
+  int cellWidth_, cellHeight_;
+  unsigned char &pixelRW(int ch, int row, int col);
+
+  GLuint texture_id;
+};
 
 #endif

@@ -43,17 +43,50 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SHADERS_HH
-#define SHADERS_HH
+#include <cstdlib>
+#include <cstdio>
+#include <string>
 
-extern const char triangleVertexShaderSource[];
-extern const char triangleFragmentShaderSource[];
-extern const char solidVertexShaderSource[];
-extern const char solidFragmentShaderSource[];
-extern const char cloudVertexShaderSource[];
-extern const char cloudGeometryShaderSource[];
-extern const char cloudFragmentShaderSource[];
-extern const char finalVertexShaderSource[];
-extern const char finalFragmentShaderSource[];
+void out(int c)
+{
+  static int count = 0;
+  if (count != 0) putchar(',');
+  if (count % 16 == 0) putchar('\n');
+  printf("%d", c);
+  ++count;
+}
 
-#endif
+void usage()
+{
+  fprintf(stderr,
+          "Usage: bin2string <source-code-varname> [null] [unsigned]\n");
+  exit(1);
+}
+
+int main(int argc, char *argv[])
+{
+  if (argc < 2)
+    usage();
+
+  bool terminating_null = false;
+  bool unsigned_type = false;
+  for (int arg = 2; arg < argc; ++arg) {
+    if (std::string("null") == argv[arg])
+      terminating_null = true;
+    else if (std::string("unsigned") == argv[arg])
+      unsigned_type = true;
+    else
+      usage();
+  }
+
+  printf("extern const %s %s[] = {",
+         unsigned_type ? "unsigned char" : "char", argv[1]);
+  int c;
+  while ((c = getchar()) != EOF)
+    out(c);
+  if (terminating_null)
+    out(0);
+  printf("\n};\n");
+
+  return 0;
+}

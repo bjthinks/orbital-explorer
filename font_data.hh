@@ -43,17 +43,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SHADERS_HH
-#define SHADERS_HH
+#ifndef FONT_DATA_HH
+#define FONT_DATA_HH
 
-extern const char triangleVertexShaderSource[];
-extern const char triangleFragmentShaderSource[];
-extern const char solidVertexShaderSource[];
-extern const char solidFragmentShaderSource[];
-extern const char cloudVertexShaderSource[];
-extern const char cloudGeometryShaderSource[];
-extern const char cloudFragmentShaderSource[];
-extern const char finalVertexShaderSource[];
-extern const char finalFragmentShaderSource[];
+#include <cstdlib>
+
+extern const unsigned char font_data[];
+extern const size_t font_data_size;
 
 #endif
