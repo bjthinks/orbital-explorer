@@ -48,6 +48,8 @@
 
 extern const char triangleVertexShaderSource[];
 extern const char triangleFragmentShaderSource[];
+extern const char characterVertexShaderSource[];
+extern const char characterFragmentShaderSource[];
 extern const char solidVertexShaderSource[];
 extern const char solidFragmentShaderSource[];
 extern const char cloudVertexShaderSource[];

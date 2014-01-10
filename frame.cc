@@ -46,6 +46,7 @@
 #include "frame.hh"
 #include "shaders.hh"
 #include "vector.hh"
+#include "font.hh"
 
 Program *Triangle::triangleProg = NULL;
 VertexArrayObject *Triangle::triangleVAO = NULL;
@@ -95,7 +96,67 @@ void Triangle::draw(Frameview view)
   triangleProg->uniform<Vector<2> >("y") = deviceToWindow(view, yy);
   triangleProg->uniform<Vector<2> >("z") = deviceToWindow(view, zz);
   triangleProg->uniform<Vector<4> >("color") = cc;
+  glEnable(GL_FRAMEBUFFER_SRGB);
   glDrawArrays(GL_TRIANGLES, 0, 3);
+  glDisable(GL_FRAMEBUFFER_SRGB);
+
+  GetGLError();
+}
+
+Program *Character::characterProg = NULL;
+VertexArrayObject *Character::characterVAO = NULL;
+
+Character::Character(Container *p, Font *f)
+  : Frame(p),
+    font(f)
+{
+  if (characterProg == NULL) {
+    characterProg = new Program();
+    characterProg->vertexShader(characterVertexShaderSource);
+    characterProg->fragmentShader(characterFragmentShaderSource);
+    glBindAttribLocation(*characterProg, 0, "index");
+    glBindFragDataLocation(*characterProg, 0, "fragColor");
+    characterProg->link();
+
+    GetGLError();
+
+    characterVAO = new VertexArrayObject();
+    characterVAO->bind();
+    int verts[4] = { 0, 1, 2, 3 };
+    characterVAO->buffer(GL_ARRAY_BUFFER, verts, sizeof(verts));
+    glEnableVertexAttribArray(0);
+    glVertexAttribIPointer(0, 1, GL_INT, sizeof(int), NULL);
+
+    GetGLError();
+  }
+}
+
+void Character::draw(Frameview view)
+{
+  glViewport(view.left, view.bottom, view.width, view.height);
+  characterProg->use();
+  glDisable(GL_DEPTH_TEST);
+  glDisable(GL_BLEND);
+  characterVAO->bind();
+  characterProg->uniform<Vector<2> >("x")
+    = deviceToWindow(view, pp);
+  characterProg->uniform<Vector<2> >("y")
+    = deviceToWindow(view, pp + Vector2(font->cellWidth(), 0));
+  characterProg->uniform<Vector<2> >("z")
+    = deviceToWindow(view, pp + Vector2(font->cellWidth(), font->cellHeight()));
+  characterProg->uniform<Vector<2> >("w")
+    = deviceToWindow(view, pp + Vector2(0, font->cellHeight()));
+  characterProg->uniform<Vector<2> >("tx") = Vector2(0, double(ch) / 128.0);
+  characterProg->uniform<Vector<2> >("ty") = Vector2(1, double(ch) / 128.0);
+  characterProg->uniform<Vector<2> >("tz") = Vector2(1, double(ch + 1) / 128.0);
+  characterProg->uniform<Vector<2> >("tw") = Vector2(0, double(ch + 1) / 128.0);
+  characterProg->uniform<Vector<4> >("color") = cc;
+  characterProg->uniform<int>("font") = 0;
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_2D, font->getTexture());
+  glEnable(GL_FRAMEBUFFER_SRGB);
+  glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+  glDisable(GL_FRAMEBUFFER_SRGB);
 
   GetGLError();
 }

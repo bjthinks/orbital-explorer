@@ -52,6 +52,8 @@
 #include "oopengl.hh"
 #include "vector.hh"
 #include "color.hh"
+#include "font.hh"
+#include "shaders.hh"
 
 // Small aggregate to encapsulate viewports.
 // FIXME: Name conflict needs resolution.
@@ -127,7 +129,7 @@ private:
   Frameview relview;
 };
 
-// Triangles are the basic drawing primitive.
+// Triangles are a basic drawing primitive.
 
 class Triangle : public Frame
 {
@@ -196,6 +198,35 @@ public:
 
 private:
   Box box;
+};
+
+// An antialiased 7-bit ASCII character
+
+class Character : public Frame
+{
+public:
+  Character(Container *p, Font *f);
+  void point(Vector<2> p)
+  {
+    pp = p;
+  }
+  void character(char c)
+  {
+    ch = c;
+  }
+  void color(Color c)
+  {
+    cc = c;
+  }
+  void draw(Frameview view);
+
+private:
+  static Program *characterProg;
+  static VertexArrayObject *characterVAO;
+  Font *font;
+  Vector<2> pp;
+  Color cc;
+  char ch;
 };
 
 // Implementations of "simple" functions follow.

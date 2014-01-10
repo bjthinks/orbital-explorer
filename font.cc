@@ -45,8 +45,6 @@
 
 #include <vector>
 #include <cctype>
-#include <ft2build.h>
-#include FT_FREETYPE_H
 
 #include "font.hh"
 #include "font_data.hh"
@@ -109,7 +107,7 @@ Font::Font(int points)
     for (int bitmap_row = 0; bitmap_row < bitmap.rows; ++bitmap_row) {
       for (int bitmap_col = 0; bitmap_col < bitmap.width; ++bitmap_col) {
         int p = bitmap.buffer[bitmap_row * bitmap.width + bitmap_col];
-        pixelRW(ch, maxTop - getGlyphTop() + bitmap_row,
+        pixelRW(ch, maxTop - getGlyphTop() + (bitmap.rows - bitmap_row - 1),
                 getGlyphLeft() - minLeft + bitmap_col) = p;
       }
     }
@@ -117,9 +115,14 @@ Font::Font(int points)
   }
 
   glGenTextures(1, &texture_id);
+  glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, texture_id);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, cellWidth(), 128 * cellHeight(),
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, cellWidth(), 128 * cellHeight(),
                0, GL_RED, GL_UNSIGNED_BYTE, &pixelData[0]);
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 }
 
 Font::~Font()

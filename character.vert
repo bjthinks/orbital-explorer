@@ -43,52 +43,32 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef FONT_HH
-#define FONT_HH
+#version 150
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
+in int index;
+uniform vec2 x, y, z, w;
+uniform vec2 tx, ty, tz, tw;
+out vec2 coord;
 
-#include "glprocs.hh"
-
-// Note: kerning is not done, because our chosen
-// font (Source Sans Pro) has no kerning data
-
-class Font
+void main(void)
 {
-public:
-  Font(int points);
-  ~Font();
-  const unsigned char &pixel(int ch, int row, int col) const;
-  int advance(int ch) const { return advanceData.at(ch); }
-  int cellWidth() const { return cellWidth_; }
-  int cellHeight() const { return cellHeight_; }
-  int leftMargin() const {return std::max(0, -minLeft); }
-  int rightMargin() const { return std::max(0, maxRightMinusAdvance); }
-  GLuint getTexture() const { return texture_id; }
+  vec2 t;
+  if (index == 0) {
+    t = x;
+    coord = tx;
+  } else if (index == 1) {
+    t = y;
+    coord = ty;
+  } else if (index == 2) {
+    t = z;
+    coord = tz;
+  } else if (index == 3) {
+    t = w;
+    coord = tw;
+  } else {
+    t = vec2(0, 0);
+    coord = vec2(0, 0);
+  }
 
-private:
-  static bool initialized;
-  static FT_Library library;
-  FT_Face face;
-  void setGlyph(int c);
-  int getGlyphLeft()    { return face->glyph->bitmap_left; }
-  int getGlyphRight()   { return getGlyphLeft() + getGlyphWidth(); }
-  int getGlyphWidth()   { return face->glyph->bitmap.width; }
-  int getGlyphBottom()  { return getGlyphTop() - getGlyphHeight(); }
-  int getGlyphTop()     { return face->glyph->bitmap_top; }
-  int getGlyphHeight()  { return face->glyph->bitmap.rows; }
-  int getGlyphAdvance() { return face->glyph->advance.x / 64; }
-
-  std::vector<unsigned char> pixelData;
-  std::vector<int> advanceData;
-  int minLeft, maxRight, maxWidth;
-  int minBottom, maxTop, maxHeight;
-  int maxRightMinusAdvance;
-  int cellWidth_, cellHeight_;
-  unsigned char &pixelRW(int ch, int row, int col);
-
-  GLuint texture_id;
-};
-
-#endif
+  gl_Position = vec4(t.xy, 0, 1);
+}
