@@ -149,12 +149,12 @@ static int go()
   SDL_Event event;
   bool show_controls = true;
 
-  Window ui(NULL, Frameview(0, 0, 100, 100));
+  Window ui(NULL, Frameview(0, 0, 400, 100));
   Font font(24);
-  Character letter_a(&ui, &font);
-  letter_a.point(Vector2(0, 0));
-  letter_a.character('a');
-  letter_a.color(yellow);
+  String abc(&ui, &font);
+  abc.point(Vector2(0, 0));
+  abc.set("EXTERMINATE! 123@%& electrons rule");
+  abc.color(yellow);
 
   while (1) {
     // Clear the event queue, then redraw a frame
@@ -254,7 +254,7 @@ static int go()
     display(viewport, camera);
     if (show_controls)
       drawControls();
-    ui.draw(Frameview(20, 20, 120, 120));
+    ui.draw(Frameview(20, 20, 420, 120));
     SDL_GL_SwapWindow(window);
   }
 

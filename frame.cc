@@ -146,17 +146,21 @@ void Character::draw(Frameview view)
     = deviceToWindow(view, pp + Vector2(font->cellWidth(), font->cellHeight()));
   characterProg->uniform<Vector<2> >("w")
     = deviceToWindow(view, pp + Vector2(0, font->cellHeight()));
-  characterProg->uniform<Vector<2> >("tx") = Vector2(0, double(ch) / 128.0);
-  characterProg->uniform<Vector<2> >("ty") = Vector2(1, double(ch) / 128.0);
-  characterProg->uniform<Vector<2> >("tz") = Vector2(1, double(ch + 1) / 128.0);
-  characterProg->uniform<Vector<2> >("tw") = Vector2(0, double(ch + 1) / 128.0);
+  characterProg->uniform<Vector<2> >("tx") = Vector2(0, double(ch + 1) / 128.0);
+  characterProg->uniform<Vector<2> >("ty") = Vector2(1, double(ch + 1) / 128.0);
+  characterProg->uniform<Vector<2> >("tz") = Vector2(1, double(ch) / 128.0);
+  characterProg->uniform<Vector<2> >("tw") = Vector2(0, double(ch) / 128.0);
   characterProg->uniform<Vector<4> >("color") = cc;
   characterProg->uniform<int>("font") = 0;
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, font->getTexture());
+  glEnable(GL_BLEND);
+  glBlendEquation(GL_FUNC_ADD);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_FRAMEBUFFER_SRGB);
   glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
   glDisable(GL_FRAMEBUFFER_SRGB);
+  glDisable(GL_BLEND);
 
   GetGLError();
 }

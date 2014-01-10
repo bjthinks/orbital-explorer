@@ -52,6 +52,8 @@ out vec4 fragColor;
 
 void main(void)
 {
-  float font_pixel = texture(font, coord).x;
-  fragColor = font_pixel * color;
+  float coverage = texture(font, coord).x;
+  if (coverage == 0)
+    discard;
+  fragColor = vec4(color.xyz, color.w * coverage);
 }

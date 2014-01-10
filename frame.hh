@@ -219,6 +219,10 @@ public:
     cc = c;
   }
   void draw(Frameview view);
+  int advance()
+  {
+    return font->advance(ch);
+  }
 
 private:
   static Program *characterProg;
@@ -227,6 +231,57 @@ private:
   Vector<2> pp;
   Color cc;
   char ch;
+};
+
+// A character string - note absence of line wrapping
+
+class String : public Container
+{
+public:
+  String(Container *p, Font *f)
+    : Container(p),
+      font(f)
+  {}
+  ~String()
+  {
+    for (int i = 0; i < int(str.size()); ++i)
+      delete str[i];
+  }
+  void point(Vector<2> p)
+  {
+    pp = p;
+  }
+  void set(const std::string &s)
+  {
+    for (int i = 0; i < int(str.size()); ++i)
+      delete str[i];
+    str.resize(0);
+    for (int i = 0; i < int(s.size()); ++i) {
+      Character *c = new Character(this, font);
+      c->character(s[i]);
+      str.push_back(c);
+    }
+  }
+  void color(Color c)
+  {
+    cc = c;
+  }
+  void draw(Frameview view)
+  {
+    Vector<2> cur = pp;
+    for (int i = 0; i < int(str.size()); ++i) {
+      str[i]->point(cur);
+      str[i]->color(cc);
+      str[i]->draw(view);
+      cur += Vector2(str[i]->advance(), 0);
+    }
+  }
+
+private:
+  Font *font;
+  std::vector<Character *> str;
+  Vector<2> pp;
+  Color cc;
 };
 
 // Implementations of "simple" functions follow.

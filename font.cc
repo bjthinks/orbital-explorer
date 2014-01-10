@@ -107,7 +107,7 @@ Font::Font(int points)
     for (int bitmap_row = 0; bitmap_row < bitmap.rows; ++bitmap_row) {
       for (int bitmap_col = 0; bitmap_col < bitmap.width; ++bitmap_col) {
         int p = bitmap.buffer[bitmap_row * bitmap.width + bitmap_col];
-        pixelRW(ch, maxTop - getGlyphTop() + (bitmap.rows - bitmap_row - 1),
+        pixelRW(ch, maxTop - getGlyphTop() + bitmap_row,
                 getGlyphLeft() - minLeft + bitmap_col) = p;
       }
     }
