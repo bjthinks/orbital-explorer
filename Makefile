@@ -77,7 +77,7 @@ OFILES=\
 	glprocs.o \
 	myTwEventSDL20.o \
 	icon.o \
-	frame.o \
+	draw_ui.o \
 	font.o \
 	font_data.o
 

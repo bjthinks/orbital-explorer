@@ -55,7 +55,7 @@
 #include "viewport.hh"
 #include "controls.hh"
 #include "icon.hh"
-#include "frame.hh"
+#include "draw_ui.hh"
 
 using namespace std;
 
@@ -149,9 +149,10 @@ static int go()
   SDL_Event event;
   bool show_controls = true;
 
-  Window ui(NULL, Frameview(0, 0, 400, 100));
+  Container ui;
+  Window w(ui, Frameview(0, 0, 400, 100));
   Font font(24);
-  String abc(&ui, &font);
+  String abc(w, font);
   abc.point(Vector2(0, 0));
   abc.set("EXTERMINATE! 123@%& electrons rule");
   abc.color(yellow);

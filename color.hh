@@ -79,7 +79,7 @@ private:
   }
 };
 
-const Color clear;
+const Color transparent;
 const Color black(0);
 const Color grey(.5);
 const Color white(1);

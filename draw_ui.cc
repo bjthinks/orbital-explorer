@@ -43,20 +43,26 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "frame.hh"
+#include "draw_ui.hh"
 #include "shaders.hh"
 #include "vector.hh"
 #include "font.hh"
 
+static Vector<2> deviceToWindow(Frameview view, Vector<2> v)
+{
+  return Vector2(2.0 * v[0] / double(view.width) - 1.0,
+                 2.0 * v[1] / double(view.height) - 1.0);
+}
+
 Program *Triangle::triangleProg = NULL;
 VertexArrayObject *Triangle::triangleVAO = NULL;
 
-Triangle::Triangle(Container *p)
-  : Frame(p),
+Triangle::Triangle(Container &e)
+  : Element(e),
     xx(Vector2(0, 0)),
     yy(Vector2(0, 0)),
     zz(Vector2(0, 0)),
-    cc(clear)
+    cc(transparent)
 {
   if (triangleProg == NULL) {
     triangleProg = new Program();
@@ -77,12 +83,6 @@ Triangle::Triangle(Container *p)
 
     GetGLError();
   }
-}
-
-static Vector<2> deviceToWindow(Frameview view, Vector<2> v)
-{
-  return Vector2(2.0 * v[0] / double(view.width) - 1.0,
-                 2.0 * v[1] / double(view.height) - 1.0);
 }
 
 void Triangle::draw(Frameview view)
@@ -106,9 +106,12 @@ void Triangle::draw(Frameview view)
 Program *Character::characterProg = NULL;
 VertexArrayObject *Character::characterVAO = NULL;
 
-Character::Character(Container *p, Font *f)
-  : Frame(p),
-    font(f)
+Character::Character(Container &e, Font &f)
+  : Element(e),
+    font(f),
+    pp(Vector2(0, 0)),
+    cc(transparent),
+    ch('\0')
 {
   if (characterProg == NULL) {
     characterProg = new Program();
@@ -141,11 +144,11 @@ void Character::draw(Frameview view)
   characterProg->uniform<Vector<2> >("x")
     = deviceToWindow(view, pp);
   characterProg->uniform<Vector<2> >("y")
-    = deviceToWindow(view, pp + Vector2(font->cellWidth(), 0));
+    = deviceToWindow(view, pp + Vector2(font.cellWidth(), 0));
   characterProg->uniform<Vector<2> >("z")
-    = deviceToWindow(view, pp + Vector2(font->cellWidth(), font->cellHeight()));
+    = deviceToWindow(view, pp + Vector2(font.cellWidth(), font.cellHeight()));
   characterProg->uniform<Vector<2> >("w")
-    = deviceToWindow(view, pp + Vector2(0, font->cellHeight()));
+    = deviceToWindow(view, pp + Vector2(0, font.cellHeight()));
   characterProg->uniform<Vector<2> >("tx") = Vector2(0, double(ch + 1) / 128.0);
   characterProg->uniform<Vector<2> >("ty") = Vector2(1, double(ch + 1) / 128.0);
   characterProg->uniform<Vector<2> >("tz") = Vector2(1, double(ch) / 128.0);
@@ -153,7 +156,7 @@ void Character::draw(Frameview view)
   characterProg->uniform<Vector<4> >("color") = cc;
   characterProg->uniform<int>("font") = 0;
   glActiveTexture(GL_TEXTURE0);
-  glBindTexture(GL_TEXTURE_2D, font->getTexture());
+  glBindTexture(GL_TEXTURE_2D, font.getTexture());
   glEnable(GL_BLEND);
   glBlendEquation(GL_FUNC_ADD);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
