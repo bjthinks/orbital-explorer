@@ -150,12 +150,6 @@ static int go()
   bool show_controls = true;
 
   Container ui;
-  Window w(ui, Region(0, 0, 400, 100));
-  Font font(24);
-  String abc(w, font);
-  abc.point(Vector2(0, 0));
-  abc.set("EXTERMINATE! 123@%& electrons rule");
-  abc.color(yellow);
 
   while (1) {
     // Clear the event queue, then redraw a frame
