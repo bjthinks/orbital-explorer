@@ -48,10 +48,10 @@
 #include "vector.hh"
 #include "font.hh"
 
-static Vector<2> deviceToWindow(Frameview view, Vector<2> v)
+static Vector<2> deviceToWindow(Region r, Vector<2> v)
 {
-  return Vector2(2.0 * v[0] / double(view.width) - 1.0,
-                 2.0 * v[1] / double(view.height) - 1.0);
+  return Vector2(2.0 * v[0] / double(r.width) - 1.0,
+                 2.0 * v[1] / double(r.height) - 1.0);
 }
 
 Program *Triangle::triangleProg = NULL;
@@ -85,16 +85,16 @@ Triangle::Triangle(Container &e)
   }
 }
 
-void Triangle::draw(Frameview view)
+void Triangle::draw(Region r)
 {
-  glViewport(view.left, view.bottom, view.width, view.height);
+  glViewport(r.left, r.bottom, r.width, r.height);
   triangleProg->use();
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_BLEND);
   triangleVAO->bind();
-  triangleProg->uniform<Vector<2> >("x") = deviceToWindow(view, xx);
-  triangleProg->uniform<Vector<2> >("y") = deviceToWindow(view, yy);
-  triangleProg->uniform<Vector<2> >("z") = deviceToWindow(view, zz);
+  triangleProg->uniform<Vector<2> >("x") = deviceToWindow(r, xx);
+  triangleProg->uniform<Vector<2> >("y") = deviceToWindow(r, yy);
+  triangleProg->uniform<Vector<2> >("z") = deviceToWindow(r, zz);
   triangleProg->uniform<Vector<4> >("color") = cc;
   glEnable(GL_FRAMEBUFFER_SRGB);
   glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -134,21 +134,21 @@ Character::Character(Container &e, Font &f)
   }
 }
 
-void Character::draw(Frameview view)
+void Character::draw(Region r)
 {
-  glViewport(view.left, view.bottom, view.width, view.height);
+  glViewport(r.left, r.bottom, r.width, r.height);
   characterProg->use();
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_BLEND);
   characterVAO->bind();
   characterProg->uniform<Vector<2> >("x")
-    = deviceToWindow(view, pp);
+    = deviceToWindow(r, pp);
   characterProg->uniform<Vector<2> >("y")
-    = deviceToWindow(view, pp + Vector2(font.cellWidth(), 0));
+    = deviceToWindow(r, pp + Vector2(font.cellWidth(), 0));
   characterProg->uniform<Vector<2> >("z")
-    = deviceToWindow(view, pp + Vector2(font.cellWidth(), font.cellHeight()));
+    = deviceToWindow(r, pp + Vector2(font.cellWidth(), font.cellHeight()));
   characterProg->uniform<Vector<2> >("w")
-    = deviceToWindow(view, pp + Vector2(0, font.cellHeight()));
+    = deviceToWindow(r, pp + Vector2(0, font.cellHeight()));
   characterProg->uniform<Vector<2> >("tx") = Vector2(0, double(ch + 1) / 128.0);
   characterProg->uniform<Vector<2> >("ty") = Vector2(1, double(ch + 1) / 128.0);
   characterProg->uniform<Vector<2> >("tz") = Vector2(1, double(ch) / 128.0);

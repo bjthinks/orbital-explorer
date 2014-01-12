@@ -150,7 +150,7 @@ static int go()
   bool show_controls = true;
 
   Container ui;
-  Window w(ui, Frameview(0, 0, 400, 100));
+  Window w(ui, Region(0, 0, 400, 100));
   Font font(24);
   String abc(w, font);
   abc.point(Vector2(0, 0));
@@ -255,7 +255,7 @@ static int go()
     display(viewport, camera);
     if (show_controls)
       drawControls();
-    ui.draw(Frameview(20, 20, 420, 120));
+    ui.draw(Region(0, 0, viewport.getWidth(), viewport.getHeight()));
     SDL_GL_SwapWindow(window);
   }
 

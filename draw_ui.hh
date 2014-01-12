@@ -55,20 +55,19 @@
 #include "font.hh"
 #include "shaders.hh"
 
-// Small aggregate to encapsulate viewports.
-// FIXME: Name conflict needs resolution.
+// Small aggregate to encapsulate rectangular regions.
 
-struct Frameview
+struct Region
 {
-  Frameview(int new_left, int new_bottom, int new_width, int new_height)
+  Region(int new_left, int new_bottom, int new_width, int new_height)
     : left(new_left), bottom(new_bottom), width(new_width), height(new_height)
   {}
-  // Compose two viewports: inner = outer * inner_relative_to_outer
-  Frameview operator*(const Frameview &rhs)
+  // Compose two Regions: inner = outer * inner_relative_to_outer
+  Region operator*(const Region &rhs)
   {
-    return Frameview(left + rhs.left, bottom + rhs.bottom,
-                     std::max(0, std::min(rhs.width, width - rhs.left)),
-                     std::max(0, std::min(rhs.height, height - rhs.bottom)));
+    return Region(left + rhs.left, bottom + rhs.bottom,
+                  std::max(0, std::min(rhs.width, width - rhs.left)),
+                  std::max(0, std::min(rhs.height, height - rhs.bottom)));
   }
   int left, bottom, width, height;
 };
@@ -80,7 +79,7 @@ class Drawable : public Uncopyable
 {
 public:
   virtual ~Drawable() {}
-  virtual void draw(Frameview view) = 0;
+  virtual void draw(Region r) = 0;
 };
 
 // A Container is a Drawable that can contain other Drawables.
@@ -92,7 +91,7 @@ class Container : virtual public Drawable
 {
 public:
   ~Container();
-  void draw(Frameview view);
+  void draw(Region r);
 
   // Called only by constructors and destructors of elements
   void addElement(Element *c);
@@ -129,12 +128,12 @@ public:
 class Window : public Composite
 {
 public:
-  Window(Container &e, Frameview view_relative_to_parent_window);
+  Window(Container &e, Region relative_to_parent_window);
   Window(Container &e);
-  void draw(Frameview outer);
+  void draw(Region outer);
 
 private:
-  Frameview relview;
+  Region relative_region;
 };
 
 // Triangles are a basic drawing primitive.
@@ -147,7 +146,7 @@ public:
   Triangle &y(Vector<2> y_);
   Triangle &z(Vector<2> z_);
   Triangle &color(Color c);
-  void draw(Frameview view);
+  void draw(Region r);
 
 private:
   static Program *triangleProg;
@@ -214,7 +213,7 @@ public:
   Character &point(Vector<2> p);
   Character &set(char c);
   Character &color(Color c);
-  void draw(Frameview view);
+  void draw(Region r);
   int advance();
 
 private:
@@ -257,11 +256,11 @@ inline Container::~Container()
     throw std::logic_error("Container destructed but has elements");
 }
 
-inline void Container::draw(Frameview view)
+inline void Container::draw(Region r)
 {
   for (std::list<Element *>::iterator i = elements.begin();
        i != elements.end(); ++i)
-    (*i)->draw(view);
+    (*i)->draw(r);
 }
 
 inline void Container::addElement(Element *c)
@@ -289,19 +288,19 @@ inline Composite::Composite(Container &e)
   : Element(e)
 {}
 
-inline Window::Window(Container &e, Frameview view_relative_to_parent_window)
+inline Window::Window(Container &e, Region relative_to_parent_window)
   : Composite(e),
-    relview(view_relative_to_parent_window)
+    relative_region(relative_to_parent_window)
 {}
 
 inline Window::Window(Container &e)
   : Composite(e),
-    relview(Frameview(0, 0, 0, 0))
+    relative_region(Region(0, 0, 0, 0))
 {}
 
-inline void Window::draw(Frameview outer)
+inline void Window::draw(Region outer)
 {
-  Composite::draw(outer * relview);
+  Composite::draw(outer * relative_region);
 }
 
 inline Triangle &Triangle::x(Vector<2> x_)
