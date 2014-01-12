@@ -94,7 +94,11 @@ void main(void)
   // by total intensity (Y), gives intensity-weighted chromaticity.
   // These are the pre-scaled uv values, offset so white point is origin.
   // Maximum magnitude of this vector is 1.
-  vec2 pre_uv = integrated_rim.xy / integrated_Y;
+  vec2 pre_uv;
+  if (integrated_Y > 0)
+    pre_uv = integrated_rim.xy / integrated_Y;
+  else
+    pre_uv = vec2(0, 0);
 
   // Color rotation
   pre_uv = pre_uv * color_trans;
@@ -114,7 +118,7 @@ void main(void)
   // Scale uv so that it is in-gamut
   // FIXME: This is not correct for solid objects
   vec2 cloud_uv;
-  if (use_color && cloud_Y > 0.0)
+  if (use_color && integrated_Y > 0.0)
     cloud_uv = distance_to_gamut_edge(pre_uv, cloud_Y) * pre_uv;
   else
     cloud_uv = vec2(0, 0);
@@ -155,13 +159,11 @@ void main(void)
   // streamline the calculation.
   vec3 grey_RGB = vec3(Y);
   vec3 RGB_overshoot = max(linear_RGB - vec3(1.0), vec3(0.0));
-  /*
   vec3 blet = RGB_overshoot / (linear_RGB - grey_RGB); // NaN problem here?
   float t = max(blet.r, max(blet.g, blet.b));
   linear_RGB = mix(linear_RGB, grey_RGB, t);
-  */
-  if (any(greaterThan(RGB_overshoot, vec3(0.001))))
-    linear_RGB = vec3(0);
+  //if (any(greaterThan(RGB_overshoot, vec3(0.001))))
+  //linear_RGB = vec3(0);
 
   // Gamma correction is performed by GL_FRAMEBUFFER_SRGB
   RGB = linear_RGB;
