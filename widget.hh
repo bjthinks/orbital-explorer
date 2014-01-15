@@ -73,21 +73,21 @@ struct Region
 };
 
 // Time to make a fun class hierarchy!
-// The base class is Drawable, which can be drawn.
+// The base class is Widget, which can be drawn.
 
-class Drawable : public Uncopyable
+class Widget : public Uncopyable
 {
 public:
-  virtual ~Drawable() {}
+  virtual ~Widget() {}
   virtual void draw(Region r) = 0;
 };
 
-// A Container is a Drawable that can contain other Drawables.
-// An Element is a Drawable that goes in a Container.
+// A Container is a Widget that can contain other Widgets.
+// An Element is a Widget that goes in a Container.
 
 class Element;
 
-class Container : virtual public Drawable
+class Container : virtual public Widget
 {
 public:
   ~Container();
@@ -101,9 +101,9 @@ private:
   std::list<Element *> elements;
 };
 
-// All but top-level Drawables will go in a Container. They are Elements.
+// All but top-level Widgets will go in a Container. They are Elements.
 
-class Element : virtual public Drawable
+class Element : virtual public Widget
 {
 public:
   Element(Container &e);
@@ -113,7 +113,7 @@ private:
   Container &enclosure;
 };
 
-// A Drawable that's both a Container and an Element is a Composite.
+// A Widget that's both a Container and an Element is a Composite.
 
 class Composite : public Container, public Element
 {

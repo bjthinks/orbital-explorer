@@ -43,7 +43,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "draw_ui.hh"
+#include "widget.hh"
 #include "shaders.hh"
 #include "vector.hh"
 #include "font.hh"

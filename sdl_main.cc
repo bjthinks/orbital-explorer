@@ -55,7 +55,7 @@
 #include "viewport.hh"
 #include "controls.hh"
 #include "icon.hh"
-#include "draw_ui.hh"
+#include "widget.hh"
 
 using namespace std;
 
