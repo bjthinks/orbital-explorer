@@ -174,7 +174,14 @@ static int go()
         case SDL_MOUSEBUTTONDOWN:
           ui.handle(Click());
           break;
+        case SDL_MOUSEBUTTONUP:
+          ui.handle(Unclick());
+          break;
         case SDL_MOUSEMOTION:
+          if (event.motion.state != 0)
+            ui.handle(Drag());
+          else
+            ; // Maybe add a Move event later -- don't need it now
           if (event.motion.state == SDL_BUTTON_LMASK) {
             camera.rotate(double(event.motion.xrel) / viewport.getWidth(),
                           double(event.motion.yrel) / viewport.getHeight());
@@ -185,6 +192,7 @@ static int go()
           }
           break;
         case SDL_MOUSEWHEEL:
+          ui.handle(Wheel());
           camera.zoom(-DISCRETE_ZOOM_SIZE * event.wheel.y);
           break;
         case SDL_KEYDOWN:

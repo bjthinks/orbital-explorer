@@ -77,6 +77,21 @@ public:
     //cout << "Clicked on the CameraController\n";
     return true;
   }
+  bool handleUnclick(const Unclick &c)
+  {
+    //cout << "Unclicked on the CameraController\n";
+    return true;
+  }
+  bool handleDrag(const Drag &c)
+  {
+    //cout << "Dragged on the CameraController\n";
+    return true;
+  }
+  bool handleWheel(const Wheel &c)
+  {
+    //cout << "Mousewheeled on the CameraController\n";
+    return true;
+  }
 
 private:
   Camera &camera;

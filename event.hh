@@ -59,12 +59,27 @@ public:
 };
 
 class Click;
+class Unclick;
+class Drag;
+class Wheel;
 
 class Handler
 {
 public:
   virtual ~Handler() {}
   virtual bool handleClick(const Click &c)
+  {
+    return false;
+  }
+  virtual bool handleUnclick(const Unclick &c)
+  {
+    return false;
+  }
+  virtual bool handleDrag(const Drag &c)
+  {
+    return false;
+  }
+  virtual bool handleWheel(const Wheel &c)
   {
     return false;
   }
@@ -78,6 +93,33 @@ public:
   bool dispatchTo(Handler &h) const
   {
     return h.handleClick(*this);
+  }
+};
+
+class Unclick : public Event
+{
+public:
+  bool dispatchTo(Handler &h) const
+  {
+    return h.handleUnclick(*this);
+  }
+};
+
+class Drag : public Event
+{
+public:
+  bool dispatchTo(Handler &h) const
+  {
+    return h.handleDrag(*this);
+  }
+};
+
+class Wheel : public Event
+{
+public:
+  bool dispatchTo(Handler &h) const
+  {
+    return h.handleWheel(*this);
   }
 };
 
