@@ -81,7 +81,7 @@ class Widget : public Uncopyable
 public:
   virtual ~Widget() {}
   virtual void draw(Region r) = 0;
-  virtual bool handle(Event &e) = 0;
+  virtual bool handle(const Event &e) = 0;
 };
 
 // A Container is a Widget that can contain other Widgets.
@@ -94,7 +94,7 @@ class Container : virtual public Widget
 public:
   ~Container();
   void draw(Region r);
-  bool handle(Event &e);
+  bool handle(const Event &e);
 
   // Called only by constructors and destructors of Contained widgets
   void addContents(Contained *c);
@@ -146,7 +146,7 @@ class Element : public Contained, public Handler
 {
 public:
   Element(Container &e);
-  bool handle(Event &e);
+  bool handle(const Event &e);
 };
 
 // Triangles are a basic drawing primitive.
@@ -276,7 +276,7 @@ inline void Container::draw(Region r)
     (*i)->draw(r);
 }
 
-inline bool Container::handle(Event &e)
+inline bool Container::handle(const Event &e)
 {
   for (std::list<Contained *>::iterator i = contents.begin();
        i != contents.end(); ++i) {
@@ -331,7 +331,7 @@ inline Element::Element(Container &e)
   : Contained(e)
 {}
 
-inline bool Element::handle(Event &e)
+inline bool Element::handle(const Event &e)
 {
   return e.dispatchTo(*this);
 }

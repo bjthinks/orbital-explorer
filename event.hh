@@ -55,7 +55,7 @@ class Event
 {
 public:
   virtual ~Event() {}
-  virtual bool dispatchTo(Handler &h) = 0;
+  virtual bool dispatchTo(Handler &h) const = 0;
 };
 
 class Click;
@@ -64,7 +64,7 @@ class Handler
 {
 public:
   virtual ~Handler() {}
-  virtual bool handleClick(Click &c)
+  virtual bool handleClick(const Click &c)
   {
     return false;
   }
@@ -75,7 +75,7 @@ public:
 class Click : public Event
 {
 public:
-  bool dispatchTo(Handler &h)
+  bool dispatchTo(Handler &h) const
   {
     return h.handleClick(*this);
   }
