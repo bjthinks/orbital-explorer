@@ -49,6 +49,7 @@
 #include "quaternion.hh"
 #include "matrix.hh"
 #include "widget.hh"
+#include "config.hh"
 
 class Camera
 {
@@ -89,7 +90,7 @@ public:
   }
   bool handleWheel(const Wheel &c)
   {
-    //cout << "Mousewheeled on the CameraController\n";
+    camera.zoom(-DISCRETE_ZOOM_SIZE * c.direction());
     return true;
   }
 

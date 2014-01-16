@@ -192,8 +192,7 @@ static int go()
           }
           break;
         case SDL_MOUSEWHEEL:
-          ui.handle(Wheel());
-          camera.zoom(-DISCRETE_ZOOM_SIZE * event.wheel.y);
+          ui.handle(Wheel(event.wheel.y));
           break;
         case SDL_KEYDOWN:
           int key, mod;

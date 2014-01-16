@@ -117,10 +117,20 @@ public:
 class Wheel : public Event
 {
 public:
+  Wheel(int direction_)
+    : dir(direction_)
+  {}
+  int direction() const
+  {
+    return dir;
+  }
   bool dispatchTo(Handler &h) const
   {
     return h.handleWheel(*this);
   }
+
+private:
+  int dir;
 };
 
 #endif
