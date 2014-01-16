@@ -85,7 +85,7 @@ public:
 // A Container is a Widget that can contain other Widgets.
 // An Element is a Widget that goes in a Container.
 
-class Element;
+class Contained;
 
 class Container : virtual public Widget
 {
@@ -93,29 +93,29 @@ public:
   ~Container();
   void draw(Region r);
 
-  // Called only by constructors and destructors of elements
-  void addElement(Element *c);
-  void deleteElement(Element *c);
+  // Called only by constructors and destructors of Contained widgets
+  void addContents(Contained *c);
+  void deleteContents(Contained *c);
 
 private:
-  std::list<Element *> elements;
+  std::list<Contained *> contents;
 };
 
-// All but top-level Widgets will go in a Container. They are Elements.
+// All but top-level Widgets will go in a Container. They are Contained.
 
-class Element : virtual public Widget
+class Contained : virtual public Widget
 {
 public:
-  Element(Container &e);
-  ~Element();
+  Contained(Container &e);
+  ~Contained();
 
 private:
   Container &enclosure;
 };
 
-// A Widget that's both a Container and an Element is a Composite.
+// A Widget that's both a Container and an Contained is a Composite.
 
-class Composite : public Container, public Element
+class Composite : public Container, public Contained
 {
 public:
   Composite(Container &e);
@@ -134,6 +134,14 @@ public:
 
 private:
   Region relative_region;
+};
+
+// A Widget that's only a Contained is an Element.
+
+class Element : public Contained
+{
+public:
+  Element(Container &e);
 };
 
 // Triangles are a basic drawing primitive.
@@ -252,40 +260,40 @@ private:
 
 inline Container::~Container()
 {
-  if (elements.size() != 0)
-    throw std::logic_error("Container destructed but has elements");
+  if (contents.size() != 0)
+    throw std::logic_error("Container destructed but has contents");
 }
 
 inline void Container::draw(Region r)
 {
-  for (std::list<Element *>::iterator i = elements.begin();
-       i != elements.end(); ++i)
+  for (std::list<Contained *>::iterator i = contents.begin();
+       i != contents.end(); ++i)
     (*i)->draw(r);
 }
 
-inline void Container::addElement(Element *c)
+inline void Container::addContents(Contained *c)
 {
-  elements.push_front(c);
+  contents.push_front(c);
 }
 
-inline void Container::deleteElement(Element *c)
+inline void Container::deleteContents(Contained *c)
 {
-  elements.remove(c);
+  contents.remove(c);
 }
 
-inline Element::Element(Container &e)
+inline Contained::Contained(Container &e)
   : enclosure(e)
 {
-  enclosure.addElement(this);
+  enclosure.addContents(this);
 }
 
-inline Element::~Element()
+inline Contained::~Contained()
 {
-  enclosure.deleteElement(this);
+  enclosure.deleteContents(this);
 }
 
 inline Composite::Composite(Container &e)
-  : Element(e)
+  : Contained(e)
 {}
 
 inline Window::Window(Container &e, Region relative_to_parent_window)
@@ -302,6 +310,10 @@ inline void Window::draw(Region outer)
 {
   Composite::draw(outer * relative_region);
 }
+
+inline Element::Element(Container &e)
+  : Contained(e)
+{}
 
 inline Triangle &Triangle::x(Vector<2> x_)
 {
