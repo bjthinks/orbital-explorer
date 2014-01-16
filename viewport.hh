@@ -43,8 +43,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef MOUSEEVENTS_HH
-#define MOUSEEVENTS_HH
+#ifndef VIEWPORT_HH
+#define VIEWPORT_HH
 
 #include "matrix.hh"
 

@@ -43,8 +43,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef SDLTOATB_HH
-#define SDLTOATB_HH
+#ifndef MYTWEVENTSDL20_HH
+#define MYTWEVENTSDL20_HH
 
 #include <SDL.h>
 

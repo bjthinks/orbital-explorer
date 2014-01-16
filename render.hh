@@ -43,8 +43,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef CALLBACKS_HH
-#define CALLBACKS_HH
+#ifndef RENDER_HH
+#define RENDER_HH
 
 #include "viewport.hh"
 #include "camera.hh"

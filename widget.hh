@@ -43,8 +43,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef FRAME_HH
-#define FRAME_HH
+#ifndef WIDGET_HH
+#define WIDGET_HH
 
 #include <list>
 
