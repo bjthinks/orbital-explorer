@@ -48,6 +48,7 @@
 
 #include "quaternion.hh"
 #include "matrix.hh"
+#include "widget.hh"
 
 class Camera
 {
@@ -62,6 +63,23 @@ public:
 private:
   Quaternion rotation;
   double radius;
+};
+
+class CameraController : public Element
+{
+public:
+  CameraController(Container &e, Camera &cam)
+    : Element(e), camera(cam)
+  {}
+  void draw(Region) {}
+  bool handleClick(const Click &c)
+  {
+    //cout << "Clicked on the CameraController\n";
+    return true;
+  }
+
+private:
+  Camera &camera;
 };
 
 #endif

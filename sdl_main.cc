@@ -150,6 +150,7 @@ static int go()
   bool show_controls = true;
 
   Container ui;
+  CameraController cc(ui, camera);
 
   while (1) {
     // Clear the event queue, then redraw a frame
@@ -169,6 +170,9 @@ static int go()
             viewport.resize(event.window.data1, event.window.data2);
             resizeTextures(viewport);
           }
+          break;
+        case SDL_MOUSEBUTTONDOWN:
+          ui.handle(Click());
           break;
         case SDL_MOUSEMOTION:
           if (event.motion.state == SDL_BUTTON_LMASK) {
