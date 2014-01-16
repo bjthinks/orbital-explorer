@@ -178,17 +178,26 @@ static int go()
           ui.handle(Unclick());
           break;
         case SDL_MOUSEMOTION:
-          if (event.motion.state != 0)
-            ui.handle(Drag());
-          else
-            ; // Maybe add a Move event later -- don't need it now
-          if (event.motion.state == SDL_BUTTON_LMASK) {
-            camera.rotate(double(event.motion.xrel) / viewport.getWidth(),
-                          double(event.motion.yrel) / viewport.getHeight());
-          }
-          else if (event.motion.state == SDL_BUTTON_RMASK) {
-            camera.spin(-double(event.motion.xrel) / viewport.getWidth());
-            camera.zoom(double(event.motion.yrel) / viewport.getHeight());
+          {
+            int buttons = NoButton;
+            if (event.motion.state & SDL_BUTTON_LMASK)
+              buttons |= LeftButton;
+            if (event.motion.state & SDL_BUTTON_MMASK)
+              buttons |= MiddleButton;
+            if (event.motion.state & SDL_BUTTON_RMASK)
+              buttons |= RightButton;
+            if (buttons != NoButton)
+              ui.handle(Drag(buttons));
+            else
+              ; // Maybe add a Move event later -- don't need it now
+            if (event.motion.state == SDL_BUTTON_LMASK) {
+              camera.rotate(double(event.motion.xrel) / viewport.getWidth(),
+                            double(event.motion.yrel) / viewport.getHeight());
+            }
+            else if (event.motion.state == SDL_BUTTON_RMASK) {
+              camera.spin(-double(event.motion.xrel) / viewport.getWidth());
+              camera.zoom(double(event.motion.yrel) / viewport.getHeight());
+            }
           }
           break;
         case SDL_MOUSEWHEEL:

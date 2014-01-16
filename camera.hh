@@ -83,14 +83,17 @@ public:
     //cout << "Unclicked on the CameraController\n";
     return true;
   }
-  bool handleDrag(const Drag &c)
+  bool handleDrag(const Drag &d)
   {
-    //cout << "Dragged on the CameraController\n";
+    if (d.buttons() == LeftButton)
+      ; //cout << "Left drag\n";
+    if (d.buttons() == RightButton)
+      ; //cout << "Right drag\n";
     return true;
   }
-  bool handleWheel(const Wheel &c)
+  bool handleWheel(const Wheel &w)
   {
-    camera.zoom(-DISCRETE_ZOOM_SIZE * c.direction());
+    camera.zoom(-DISCRETE_ZOOM_SIZE * w.direction());
     return true;
   }
 

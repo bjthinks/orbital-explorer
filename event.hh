@@ -85,7 +85,13 @@ public:
   }
 };
 
-// enum Button { LeftButton, MiddleButton, RightButton };
+enum Button
+{
+  NoButton = 0,
+  LeftButton = 1,
+  MiddleButton = 2,
+  RightButton = 4
+};
 
 class Click : public Event
 {
@@ -108,10 +114,20 @@ public:
 class Drag : public Event
 {
 public:
+  Drag(int buttons_)
+    : buts(buttons_)
+  {}
+  int buttons() const
+  {
+    return buts;
+  }
   bool dispatchTo(Handler &h) const
   {
     return h.handleDrag(*this);
   }
+
+private:
+  int buts;
 };
 
 class Wheel : public Event
