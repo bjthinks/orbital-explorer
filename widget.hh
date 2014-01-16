@@ -54,6 +54,7 @@
 #include "color.hh"
 #include "font.hh"
 #include "shaders.hh"
+#include "event.hh"
 
 // Small aggregate to encapsulate rectangular regions.
 
@@ -80,6 +81,7 @@ class Widget : public Uncopyable
 public:
   virtual ~Widget() {}
   virtual void draw(Region r) = 0;
+  virtual bool handle(Event &e) = 0;
 };
 
 // A Container is a Widget that can contain other Widgets.
@@ -92,6 +94,7 @@ class Container : virtual public Widget
 public:
   ~Container();
   void draw(Region r);
+  bool handle(Event &e);
 
   // Called only by constructors and destructors of Contained widgets
   void addContents(Contained *c);
@@ -137,11 +140,13 @@ private:
 };
 
 // A Widget that's only a Contained is an Element.
+// Elements can also handle Events.
 
-class Element : public Contained
+class Element : public Contained, public Handler
 {
 public:
   Element(Container &e);
+  bool handle(Event &e);
 };
 
 // Triangles are a basic drawing primitive.
@@ -271,6 +276,17 @@ inline void Container::draw(Region r)
     (*i)->draw(r);
 }
 
+inline bool Container::handle(Event &e)
+{
+  for (std::list<Contained *>::iterator i = contents.begin();
+       i != contents.end(); ++i) {
+    if ((*i)->handle(e))
+      return true;
+  }
+
+  return false;
+}
+
 inline void Container::addContents(Contained *c)
 {
   contents.push_front(c);
@@ -314,6 +330,11 @@ inline void Window::draw(Region outer)
 inline Element::Element(Container &e)
   : Contained(e)
 {}
+
+inline bool Element::handle(Event &e)
+{
+  return e.dispatchTo(*this);
+}
 
 inline Triangle &Triangle::x(Vector<2> x_)
 {
