@@ -93,33 +93,70 @@ enum Button
   RightButton = 4
 };
 
-class Click : public Event
+class PositionedEvent : public Event
 {
 public:
+  PositionedEvent(int x_, int y_)
+    : xpos(x_),
+      ypos(y_)
+  {}
+  int x() const
+  {
+    return xpos;
+  }
+  int y() const
+  {
+    return ypos;
+  }
+
+private:
+  int xpos, ypos;
+};
+
+class Click : public PositionedEvent
+{
+public:
+  Click(int x_, int y_)
+    : PositionedEvent(x_, y_)
+  {}
   bool dispatchTo(Handler &h) const
   {
     return h.handleClick(*this);
   }
 };
 
-class Unclick : public Event
+class Unclick : public PositionedEvent
 {
 public:
+  Unclick(int x_, int y_)
+    : PositionedEvent(x_, y_)
+  {}
   bool dispatchTo(Handler &h) const
   {
     return h.handleUnclick(*this);
   }
 };
 
-class Drag : public Event
+class Drag : public PositionedEvent
 {
 public:
-  Drag(int buttons_)
-    : buts(buttons_)
+  Drag(int x_, int y_, int buttons_, int xrel_, int yrel_)
+    : PositionedEvent(x_, y_),
+      buts(buttons_),
+      xr(xrel_),
+      yr(yrel_)
   {}
   int buttons() const
   {
     return buts;
+  }
+  int xrel() const
+  {
+    return xr;
+  }
+  int yrel() const
+  {
+    return yr;
   }
   bool dispatchTo(Handler &h) const
   {
@@ -128,6 +165,7 @@ public:
 
 private:
   int buts;
+  int xr, yr;
 };
 
 class Wheel : public Event

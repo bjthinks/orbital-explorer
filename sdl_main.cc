@@ -172,10 +172,10 @@ static int go()
           }
           break;
         case SDL_MOUSEBUTTONDOWN:
-          ui.handle(Click());
+          ui.handle(Click(event.button.x, event.button.y));
           break;
         case SDL_MOUSEBUTTONUP:
-          ui.handle(Unclick());
+          ui.handle(Unclick(event.button.x, event.button.y));
           break;
         case SDL_MOUSEMOTION:
           {
@@ -187,7 +187,8 @@ static int go()
             if (event.motion.state & SDL_BUTTON_RMASK)
               buttons |= RightButton;
             if (buttons != NoButton)
-              ui.handle(Drag(buttons));
+              ui.handle(Drag(event.motion.x, event.motion.y,
+                             buttons, event.motion.xrel, event.motion.yrel));
             else
               ; // Maybe add a Move event later -- don't need it now
             if (event.motion.state == SDL_BUTTON_LMASK) {
