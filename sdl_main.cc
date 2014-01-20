@@ -191,14 +191,6 @@ static int go()
                              buttons, event.motion.xrel, event.motion.yrel));
             else
               ; // Maybe add a Move event later -- don't need it now
-            if (event.motion.state == SDL_BUTTON_LMASK) {
-              camera.rotate(double(event.motion.xrel) / viewport.getWidth(),
-                            double(event.motion.yrel) / viewport.getHeight());
-            }
-            else if (event.motion.state == SDL_BUTTON_RMASK) {
-              camera.spin(-double(event.motion.xrel) / viewport.getWidth());
-              camera.zoom(double(event.motion.yrel) / viewport.getHeight());
-            }
           }
           break;
         case SDL_MOUSEWHEEL:

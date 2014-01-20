@@ -86,11 +86,17 @@ public:
   }
   bool handleDrag(const Drag &d)
   {
-    if (d.buttons() == LeftButton)
-      ; //cout << "Left drag\n";
-    if (d.buttons() == RightButton)
-      ; //cout << "Right drag\n";
-    return true;
+    if (d.buttons() == LeftButton) {
+      camera.rotate(double(d.xrel()) / view.getWidth(),
+                    double(d.yrel()) / view.getHeight());
+      return true;
+    }
+    if (d.buttons() == RightButton) {
+      camera.spin(-double(d.xrel()) / view.getWidth());
+      camera.zoom( double(d.yrel()) / view.getHeight());
+      return true;
+    }
+    return false;
   }
   bool handleWheel(const Wheel &w)
   {
