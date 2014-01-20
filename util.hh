@@ -47,6 +47,9 @@
 #define UTIL_HH
 
 #include <map>
+#include <iostream>
+#include <sstream>
+#include <stdexcept>
 
 #ifdef __APPLE__
 // This is really stupid. Apple's compiler generates a warning when
@@ -85,5 +88,26 @@ private:
   Uncopyable(const Uncopyable &); // DO NOT DEFINE
   Uncopyable &operator=(const Uncopyable &); // DO NOT DEFINE
 };
+
+class FatalError : public std::runtime_error
+{
+public:
+  FatalError(const char *msg, const char *f, int L)
+    : std::runtime_error(msg),
+      file(f), line(L)
+  {}
+  virtual const char *what() const throw()
+  {
+    std::ostringstream o;
+    o << file << ":" << line << ": " << std::runtime_error::what();
+    return o.str().c_str();
+  }
+
+private:
+  const char *file;
+  int line;
+};
+
+#define FATAL(x) throw FatalError((x), __FILE__, __LINE__)
 
 #endif

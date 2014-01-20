@@ -310,7 +310,7 @@ int main(int argc, char *argv[])
     return go();
   } catch (exception &e) {
     cerr << polite_error_message;
-    cerr << "Exception: " << e.what() << "\n";
+    cerr << e.what() << "\n";
     return 1;
   } catch (...) {
     cerr << polite_error_message;
