@@ -74,16 +74,6 @@ public:
     : Element(e), camera(cam), view(viewport)
   {}
   void draw(Region) {}
-  bool handleClick(const Click &c)
-  {
-    //cout << "Clicked on the CameraController\n";
-    return true;
-  }
-  bool handleUnclick(const Unclick &c)
-  {
-    //cout << "Unclicked on the CameraController\n";
-    return true;
-  }
   bool handleDrag(const Drag &d)
   {
     if (d.buttons() == LeftButton) {
