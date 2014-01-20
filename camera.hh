@@ -50,6 +50,7 @@
 #include "matrix.hh"
 #include "widget.hh"
 #include "config.hh"
+#include "viewport.hh"
 
 class Camera
 {
@@ -69,8 +70,8 @@ private:
 class CameraController : public Element
 {
 public:
-  CameraController(Container &e, Camera &cam)
-    : Element(e), camera(cam)
+  CameraController(Container &e, Camera &cam, const Viewport &viewport)
+    : Element(e), camera(cam), view(viewport)
   {}
   void draw(Region) {}
   bool handleClick(const Click &c)
@@ -99,6 +100,7 @@ public:
 
 private:
   Camera &camera;
+  const Viewport &view;
 };
 
 #endif

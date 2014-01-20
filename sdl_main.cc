@@ -150,7 +150,7 @@ static int go()
   bool show_controls = true;
 
   Container ui;
-  CameraController cc(ui, camera);
+  CameraController cc(ui, camera, viewport);
 
   while (1) {
     // Clear the event queue, then redraw a frame
