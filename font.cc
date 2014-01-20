@@ -48,26 +48,27 @@
 
 #include "font.hh"
 #include "font_data.hh"
+#include "util.hh"
 
 Font::Font(int points)
 {
   if (!initialized) {
     int error = FT_Init_FreeType(&library);
     if (error)
-      throw "Could not init Freetype 2";
+      FATAL("Could not init Freetype 2");
     initialized = true;
   }
 
   int error = FT_New_Memory_Face(library, font_data, font_data_size,
                                  0, &face);
   if (error == FT_Err_Unknown_File_Format)
-    throw "Unknown font file format";
+    FATAL("Unknown font file format");
   else if (error)
-    throw "Can\'t read font file";
+    FATAL("Can\'t read font file");
 
   error = FT_Set_Char_Size(face, 0, points * 64, 72, 72);
   if (error)
-    throw "Could not set font size";
+    FATAL("Could not set font size");
 
   // Determine some size data
   minLeft = 0;
@@ -133,11 +134,11 @@ Font::~Font()
 const unsigned char &Font::pixel(int ch, int row, int col) const
 {
   if (ch < 0 || ch >= 128)
-    throw "ch out of range";
+    FATAL("ch out of range");
   if (row < 0 || row >= cellHeight())
-    throw "row out of range";
+    FATAL("row out of range");
   if (col < 0 || col >= cellWidth())
-    throw "col out of range";
+    FATAL("col out of range");
   return pixelData.at(ch * cellWidth() * cellHeight() +
                       row * cellWidth() + col);
 }
@@ -145,11 +146,11 @@ const unsigned char &Font::pixel(int ch, int row, int col) const
 unsigned char &Font::pixelRW(int ch, int row, int col)
 {
   if (ch < 0 || ch >= 128)
-    throw "ch out of range";
+    FATAL("ch out of range");
   if (row < 0 || row >= cellHeight())
-    throw "row out of range";
+    FATAL("row out of range");
   if (col < 0 || col >= cellWidth())
-    throw "col out of range";
+    FATAL("col out of range");
   return pixelData.at(ch * cellWidth() * cellHeight() +
                       row * cellWidth() + col);
 }
@@ -160,11 +161,11 @@ void Font::setGlyph(int c)
 
   int error = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
   if (error)
-    throw "Could not load glyph";
+    FATAL("Could not load glyph");
 
   error = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
   if (error)
-    throw "Could not render glyph";
+    FATAL("Could not render glyph");
 }
 
 bool Font::initialized = false;
