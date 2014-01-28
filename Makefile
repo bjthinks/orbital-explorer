@@ -79,7 +79,8 @@ OFILES=\
 	icon.o \
 	widget.o \
 	font.o \
-	font_data.o
+	font_data.o \
+	parameters.o
 
 PROG = orbital-explorer
 TEST = unittests
