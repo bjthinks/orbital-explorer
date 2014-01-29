@@ -52,6 +52,12 @@
 
 const int MAX_ATOMIC_NUMBER = 118;
 
+// The highest energy level (N value) allowed. In principle, this is
+// arbitrary, but there may be legacy dependencies on the specific
+// value of 16. (TODO)
+
+const int MAX_ENERGY_LEVEL = 16;
+
 // How much to rotate the camera when an arrow key is pressed.
 // 1.0 = 180 degrees
 
