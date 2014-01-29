@@ -198,15 +198,4 @@ private:
   }
 };
 
-#include <iostream>
-void foo()
-{
-  Parameters p;
-  RangedParameterController<int> z = p.ZController();
-  std::cout << int(z) << "\n";
-  z = 5;
-  std::cout << int(z) << "\n";
-  std::cout << z.min() << " " << z.max() << "\n";
-}
-
 #endif
