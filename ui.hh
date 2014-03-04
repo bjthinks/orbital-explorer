@@ -55,7 +55,7 @@ template <typename T>
 class ParameterDisplayer : public Composite
 {
 public:
-  ParameterDisplayer(Container &e, ParameterReader<T> pr_, Font &font)
+  ParameterDisplayer(Container &e, ParameterReader<T> pr_, const Font &font)
     : Composite(e), pr(pr_), str(*this, font)
   {}
   void draw(Region r)
@@ -64,7 +64,7 @@ public:
     ostringstream ss;
     ss << pr;
     str.set(ss.str());
-    str.color(yellow);
+    str.color(green);
     Composite::draw(r);
   }
 
@@ -131,6 +131,41 @@ public:
 private:
   RangedParameterController<T> pc;
   Triangle tri;
+};
+
+template <typename T>
+class ParameterWidget : public Composite
+{
+public:
+  ParameterWidget(Container &e,
+                  RangedParameterController<T> pc,
+                  const Font &font)
+    : Composite(e),
+      disp(*this, pc, font),
+      inc(*this, pc),
+      dec(*this, pc),
+      font_height(font.cellHeight())
+  {}
+  void resize(int width, int height)
+  {
+    Composite::resize(width, height);
+
+    int quarter_width = width / 4;
+    int arrow_height = (height - font_height) / 2;
+
+    dec.move(quarter_width, 0);
+    dec.resize(width - 2 * quarter_width, arrow_height);
+    disp.move(0, arrow_height);
+    disp.resize(width, font_height);
+    inc.move(quarter_width, arrow_height + font_height);
+    inc.resize(width - 2 * quarter_width, arrow_height);
+  }
+
+private:
+  ParameterDisplayer<T> disp;
+  ParameterIncrementer<T> inc;
+  ParameterDecrementer<T> dec;
+  int font_height;
 };
 
 #endif

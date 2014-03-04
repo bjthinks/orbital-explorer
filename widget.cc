@@ -106,7 +106,7 @@ void Triangle::draw(Region r)
 Program *Character::characterProg = NULL;
 VertexArrayObject *Character::characterVAO = NULL;
 
-Character::Character(Container &e, Font &f)
+Character::Character(Container &e, const Font &f)
   : Element(e),
     font(f),
     pp(Vector2(0, 0)),

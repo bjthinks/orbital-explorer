@@ -237,7 +237,7 @@ private:
 class Character : public Element
 {
 public:
-  Character(Container &e, Font &f);
+  Character(Container &e, const Font &f);
   Character &point(Vector<2> p);
   Character &set(char c);
   Character &color(Color c);
@@ -247,7 +247,7 @@ public:
 private:
   static Program *characterProg;
   static VertexArrayObject *characterVAO;
-  Font &font;
+  const Font &font;
   Vector<2> pp;
   Color cc;
   char ch;
@@ -258,14 +258,14 @@ private:
 class String : public Composite
 {
 public:
-  String(Container &e, Font &f);
+  String(Container &e, const Font &f);
   ~String();
   void point(Vector<2> p);
   void set(const std::string &s);
   void color(Color c);
 
 private:
-  Font &font;
+  const Font &font;
   std::vector<Character *> str;
   Vector<2> pp;
   Color cc;
@@ -515,7 +515,7 @@ inline int Character::advance()
   return font.advance(ch);
 }
 
-inline String::String(Container &e, Font &f)
+inline String::String(Container &e, const Font &f)
   : Composite(e),
     font(f)
 {}
