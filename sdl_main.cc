@@ -150,7 +150,8 @@ static int go()
   bool show_controls = true;
 
   Container ui;
-  CameraController cc(ui, camera, viewport);
+  CameraController cc(ui, camera);
+  cc.resize(viewport.getWidth(), viewport.getHeight());
 
   while (1) {
     // Clear the event queue, then redraw a frame
@@ -168,6 +169,7 @@ static int go()
         case SDL_WINDOWEVENT:
           if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
             viewport.resize(event.window.data1, event.window.data2);
+            cc.resize(event.window.data1, event.window.data2);
             resizeTextures(viewport);
           }
           break;

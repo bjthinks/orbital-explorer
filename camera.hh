@@ -50,7 +50,6 @@
 #include "matrix.hh"
 #include "widget.hh"
 #include "config.hh"
-#include "viewport.hh"
 
 class Camera
 {
@@ -70,20 +69,20 @@ private:
 class CameraController : public Element
 {
 public:
-  CameraController(Container &e, Camera &cam, const Viewport &viewport)
-    : Element(e), camera(cam), view(viewport)
+  CameraController(Container &e, Camera &cam)
+    : Element(e), camera(cam)
   {}
   void draw(Region) {}
   bool handleDrag(const Drag &d)
   {
     if (d.buttons() == LeftButton) {
-      camera.rotate(double(d.xrel()) / view.getWidth(),
-                    double(d.yrel()) / view.getHeight());
+      camera.rotate(double(d.xrel()) / geometry.width,
+                    double(d.yrel()) / geometry.height);
       return true;
     }
     if (d.buttons() == RightButton) {
-      camera.spin(-double(d.xrel()) / view.getWidth());
-      camera.zoom( double(d.yrel()) / view.getHeight());
+      camera.spin(-double(d.xrel()) / geometry.width);
+      camera.zoom( double(d.yrel()) / geometry.height);
       return true;
     }
     return false;
@@ -96,7 +95,6 @@ public:
 
 private:
   Camera &camera;
-  const Viewport &view;
 };
 
 #endif
