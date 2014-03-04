@@ -47,6 +47,7 @@
 #define WIDGET_HH
 
 #include <list>
+#include <limits>
 
 #include "util.hh"
 #include "oopengl.hh"
@@ -60,6 +61,11 @@
 
 struct Region
 {
+  Region()
+    : left(0), bottom(0),
+      width(std::numeric_limits<int>::max()),
+      height(std::numeric_limits<int>::max())
+  {}
   Region(int new_left, int new_bottom, int new_width, int new_height)
     : left(new_left), bottom(new_bottom), width(new_width), height(new_height)
   {}
@@ -74,7 +80,8 @@ struct Region
 };
 
 // Time to make a fun class hierarchy!
-// The base class is Widget, which can be drawn.
+// The base class is Widget, which can be drawn, can handle events,
+// and has a position and size.
 
 class Widget : public Uncopyable
 {
@@ -82,6 +89,19 @@ public:
   virtual ~Widget() {}
   virtual void draw(Region r) = 0;
   virtual bool handle(const Event &e) = 0;
+  void move(int x, int y)
+  {
+    geometry.left = x;
+    geometry.bottom = y;
+  }
+  void resize(int width, int height)
+  {
+    geometry.width = width;
+    geometry.height = height;
+  }
+
+protected:
+  Region geometry;
 };
 
 // A Container is a Widget that can contain other Widgets.
@@ -125,19 +145,6 @@ public:
 };
 
 // Might also define a top-level Container here...
-
-// A Window is a Composite which constrains drawing to a smaller area.
-
-class Window : public Composite
-{
-public:
-  Window(Container &e, Region relative_to_parent_window);
-  Window(Container &e);
-  void draw(Region outer);
-
-private:
-  Region relative_region;
-};
 
 // A Widget that's only a Contained is an Element.
 // Elements can also handle Events.
@@ -273,7 +280,7 @@ inline void Container::draw(Region r)
 {
   for (std::list<Contained *>::iterator i = contents.begin();
        i != contents.end(); ++i)
-    (*i)->draw(r);
+    (*i)->draw(r * geometry);
 }
 
 inline bool Container::handle(const Event &e)
@@ -311,21 +318,6 @@ inline Contained::~Contained()
 inline Composite::Composite(Container &e)
   : Contained(e)
 {}
-
-inline Window::Window(Container &e, Region relative_to_parent_window)
-  : Composite(e),
-    relative_region(relative_to_parent_window)
-{}
-
-inline Window::Window(Container &e)
-  : Composite(e),
-    relative_region(Region(0, 0, 0, 0))
-{}
-
-inline void Window::draw(Region outer)
-{
-  Composite::draw(outer * relative_region);
-}
 
 inline Element::Element(Container &e)
   : Contained(e)
