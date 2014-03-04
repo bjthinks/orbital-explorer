@@ -93,6 +93,10 @@ static int go()
   // Request double buffering
   set_sdl_attr(SDL_GL_DOUBLEBUFFER, 1);
 
+  // Use a multisampled default framebuffer
+  set_sdl_attr(SDL_GL_MULTISAMPLEBUFFERS, 1);
+  set_sdl_attr(SDL_GL_MULTISAMPLESAMPLES, 4);
+
 #ifdef __APPLE__
   // Apple defaults to an OpenGL 2.1 Compatibility context unless you
   // specify otherwise.
