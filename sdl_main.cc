@@ -56,6 +56,8 @@
 #include "controls.hh"
 #include "icon.hh"
 #include "widget.hh"
+#include "parameters.hh"
+#include "ui.hh"
 
 using namespace std;
 
@@ -174,10 +176,14 @@ static int go()
           }
           break;
         case SDL_MOUSEBUTTONDOWN:
-          ui.handle(Click(event.button.x, event.button.y));
+          ui.handle(Region(0, 0, viewport.getWidth(), viewport.getHeight()),
+                    Click(event.button.x,
+                          viewport.getHeight() - 1 - event.button.y));
           break;
         case SDL_MOUSEBUTTONUP:
-          ui.handle(Unclick(event.button.x, event.button.y));
+          ui.handle(Region(0, 0, viewport.getWidth(), viewport.getHeight()),
+                    Unclick(event.button.x,
+                            viewport.getHeight() - 1 - event.button.y));
           break;
         case SDL_MOUSEMOTION:
           {
@@ -189,14 +195,15 @@ static int go()
             if (event.motion.state & SDL_BUTTON_RMASK)
               buttons |= RightButton;
             if (buttons != NoButton)
-              ui.handle(Drag(event.motion.x, event.motion.y,
+              ui.handle(Region(0, 0, viewport.getWidth(), viewport.getHeight()),
+                        Drag(event.motion.x, event.motion.y,
                              buttons, event.motion.xrel, event.motion.yrel));
             else
               ; // Maybe add a Move event later -- don't need it now
           }
           break;
         case SDL_MOUSEWHEEL:
-          ui.handle(Wheel(event.wheel.y));
+          cc.handleWheel(Wheel(event.wheel.y));
           break;
         case SDL_KEYDOWN:
           int key, mod;

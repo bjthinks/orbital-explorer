@@ -79,16 +79,25 @@ struct Region
   int left, bottom, width, height;
 };
 
+inline bool isEventInsideRegion(const PositionedEvent &e, const Region &r)
+{
+  if (e.x() >= r.left   && e.x() < r.left   + r.width &&
+      e.y() >= r.bottom && e.y() < r.bottom + r.height)
+    return true;
+  else
+    return false;
+}
+
 // Time to make a fun class hierarchy!
 // The base class is Widget, which can be drawn, can handle events,
 // and has a position and size.
 
-class Widget : public Uncopyable
+class Widget : public Uncopyable, public Handler
 {
 public:
   virtual ~Widget() {}
   virtual void draw(Region r) = 0;
-  virtual bool handle(const Event &e) = 0;
+  virtual bool handle(Region r, const PositionedEvent &e) = 0;
   void move(int x, int y)
   {
     geometry.left = x;
@@ -114,7 +123,7 @@ class Container : virtual public Widget
 public:
   ~Container();
   void draw(Region r);
-  bool handle(const Event &e);
+  bool handle(Region r, const PositionedEvent &e);
 
   // Called only by constructors and destructors of Contained widgets
   void addContents(Contained *c);
@@ -147,13 +156,12 @@ public:
 // Might also define a top-level Container here...
 
 // A Widget that's only a Contained is an Element.
-// Elements can also handle Events.
 
-class Element : public Contained, public Handler
+class Element : public Contained
 {
 public:
   Element(Container &e);
-  bool handle(const Event &e);
+  bool handle(Region r, const PositionedEvent &e);
 };
 
 // Triangles are a basic drawing primitive.
@@ -283,11 +291,19 @@ inline void Container::draw(Region r)
     (*i)->draw(r * geometry);
 }
 
-inline bool Container::handle(const Event &e)
+inline bool Container::handle(Region r, const PositionedEvent &e)
 {
+  r = r * geometry;
+
+  if (!isEventInsideRegion(e, r))
+    return false;
+
+  if (e.dispatchTo(*this))
+    return true;
+
   for (std::list<Contained *>::iterator i = contents.begin();
        i != contents.end(); ++i) {
-    if ((*i)->handle(e))
+    if ((*i)->handle(r, e))
       return true;
   }
 
@@ -323,8 +339,13 @@ inline Element::Element(Container &e)
   : Contained(e)
 {}
 
-inline bool Element::handle(const Event &e)
+inline bool Element::handle(Region r, const PositionedEvent &e)
 {
+  r = r * geometry;
+
+  if (!isEventInsideRegion(e, r))
+    return false;
+
   return e.dispatchTo(*this);
 }
 
