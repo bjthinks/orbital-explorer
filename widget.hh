@@ -238,39 +238,42 @@ class Character : public Element
 {
 public:
   Character(Container &e, const Font &f);
-  Character &point(Vector<2> p);
   Character &set(char c);
   Character &color(Color c);
   void draw(Region r);
-  int advance();
+  int bottom()  const { return font.bottom(ch); }
+  int left()    const { return font.left(ch); }
+  int width()   const { return font.width(ch); }
+  int advance() const { return font.advance(ch); }
 
 private:
   static Program *characterProg;
   static VertexArrayObject *characterVAO;
   const Font &font;
-  Vector<2> pp;
   Color cc;
   char ch;
 };
 
 // A character string - note absence of line wrapping
 
+enum Justification { LeftJustified, CenterJustified, RightJustified };
+
 class String : public Composite
 {
 public:
   String(Container &e, const Font &f);
   ~String();
-  void point(Vector<2> p);
   void set(const std::string &s);
   void color(Color c);
+  void justify(Justification j);
 
 private:
   const Font &font;
   std::vector<Character *> str;
-  Vector<2> pp;
   Color cc;
+  Justification jj;
 
-  void setCharacterPoints();
+  void moveCharacters();
   void setCharacterColors();
 };
 
@@ -492,15 +495,10 @@ inline Box &Box::color(Color c)
   return *this;
 }
 
-inline Character &Character::point(Vector<2> p)
-{
-  pp = p;
-  return *this;
-}
-
 inline Character &Character::set(char c)
 {
   ch = c;
+  resize(font.width(ch), font.height(ch));
   return *this;
 }
 
@@ -510,26 +508,16 @@ inline Character &Character::color(Color c)
   return *this;
 }
 
-inline int Character::advance()
-{
-  return font.advance(ch);
-}
-
 inline String::String(Container &e, const Font &f)
   : Composite(e),
-    font(f)
+    font(f),
+    jj(LeftJustified)
 {}
 
 inline String::~String()
 {
   for (int i = 0; i < int(str.size()); ++i)
     delete str[i];
-}
-
-inline void String::point(Vector<2> p)
-{
-  pp = p;
-  setCharacterPoints();
 }
 
 inline void String::set(const std::string &s)
@@ -542,7 +530,7 @@ inline void String::set(const std::string &s)
     c->set(s[i]);
     str.push_back(c);
   }
-  setCharacterPoints();
+  moveCharacters();
   setCharacterColors();
 }
 
@@ -552,13 +540,61 @@ inline void String::color(Color c)
   setCharacterColors();
 }
 
-inline void String::setCharacterPoints()
+inline void String::justify(Justification j)
 {
-  Vector<2> cur = pp;
-  for (int i = 0; i < int(str.size()); ++i) {
-    str[i]->point(cur);
-    cur += Vector2(str[i]->advance(), 0);
+  jj = j;
+  moveCharacters();
+}
+
+inline void String::moveCharacters()
+{
+  if (str.size() == 0)
+    return;
+
+  int x = 0;
+  int y = font.descender();
+
+  switch (jj) {
+  case LeftJustified:
+    {
+      if (str[0]->left() < 0)
+        x = -str[0]->left();
+    }
+    break;
+  case RightJustified:
+    {
+      x = geometry.width;
+
+      int n = str.size() - 1;
+      int right_dangle = str[n]->left() + str[n]->width() - str[n]->advance();
+      if (right_dangle > 0)
+        x -= right_dangle;
+
+      for (int i = 0; i < int(str.size()); ++i)
+        x -= str[i]->advance();
+    }
+    break;
+  case CenterJustified:
+    {
+      int twice_x = geometry.width;
+
+      for (int i = 0; i < int(str.size()); ++i)
+        twice_x -= str[i]->advance();
+
+      x = twice_x / 2;
+    }
+    break;
   }
+
+  for (int i = 0; i < int(str.size()); ++i) {
+    int cx = x + str[i]->left();
+    int cy = y + str[i]->bottom();
+    printf("Moving character %d to (%d, %d)\n", i, cx, cy);
+    str[i]->move(cx, cy);
+    x += str[i]->advance();
+  }
+
+  return;
 }
 
 inline void String::setCharacterColors()

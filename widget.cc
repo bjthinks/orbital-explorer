@@ -109,7 +109,6 @@ VertexArrayObject *Character::characterVAO = NULL;
 Character::Character(Container &e, const Font &f)
   : Element(e),
     font(f),
-    pp(Vector2(0, 0)),
     cc(transparent),
     ch('\0')
 {
@@ -141,18 +140,17 @@ void Character::draw(Region r)
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_BLEND);
   characterVAO->bind();
-  characterProg->uniform<Vector<2> >("x")
-    = deviceToWindow(r, pp);
-  characterProg->uniform<Vector<2> >("y")
-    = deviceToWindow(r, pp + Vector2(font.cellWidth(), 0));
-  characterProg->uniform<Vector<2> >("z")
-    = deviceToWindow(r, pp + Vector2(font.cellWidth(), font.cellHeight()));
-  characterProg->uniform<Vector<2> >("w")
-    = deviceToWindow(r, pp + Vector2(0, font.cellHeight()));
-  characterProg->uniform<Vector<2> >("tx") = Vector2(0, double(ch + 1) / 128.0);
-  characterProg->uniform<Vector<2> >("ty") = Vector2(1, double(ch + 1) / 128.0);
-  characterProg->uniform<Vector<2> >("tz") = Vector2(1, double(ch) / 128.0);
-  characterProg->uniform<Vector<2> >("tw") = Vector2(0, double(ch) / 128.0);
+  Vector<2> pos = Vector2(geometry.left, geometry.bottom);
+  Vector<2> dx = Vector2(geometry.width, 0);
+  Vector<2> dy = Vector2(0, geometry.height);
+  characterProg->uniform<Vector<2> >("x") = deviceToWindow(r, pos);
+  characterProg->uniform<Vector<2> >("y") = deviceToWindow(r, pos + dx);
+  characterProg->uniform<Vector<2> >("z") = deviceToWindow(r, pos + dx + dy);
+  characterProg->uniform<Vector<2> >("w") = deviceToWindow(r, pos + dy);
+  characterProg->uniform<Vector<2> >("tx") = font.texCoordLL(ch);
+  characterProg->uniform<Vector<2> >("ty") = font.texCoordLR(ch);
+  characterProg->uniform<Vector<2> >("tz") = font.texCoordUR(ch);
+  characterProg->uniform<Vector<2> >("tw") = font.texCoordUL(ch);
   characterProg->uniform<Vector<4> >("color") = cc;
   characterProg->uniform<int>("font") = 0;
   glActiveTexture(GL_TEXTURE0);

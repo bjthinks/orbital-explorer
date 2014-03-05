@@ -50,7 +50,8 @@
 #include "font_data.hh"
 #include "util.hh"
 
-Font::Font(int points)
+Font::Font(int points_)
+  : points(points_)
 {
   if (!initialized) {
     int error = FT_Init_FreeType(&library);
@@ -71,47 +72,41 @@ Font::Font(int points)
     FATAL("Could not set font size");
 
   // Determine some size data
-  minLeft = 0;
-  maxRight = 0;
-  maxWidth = 0;
-  minBottom = 0;
-  maxTop = 0;
-  maxHeight = 0;
-  maxRightMinusAdvance = 0;
+  int minBottom = 0;
+  int maxWidth = 0;
+  int maxHeight = 0;
   for (int ch = 0; ch < 128; ++ch) {
     setGlyph(ch);
-    if (getGlyphLeft() < minLeft)
-      minLeft = getGlyphLeft();
-    if (getGlyphRight() > maxRight)
-      maxRight = getGlyphRight();
-    if (getGlyphWidth() > maxWidth)
-      maxWidth = getGlyphWidth();
     if (getGlyphBottom() < minBottom)
       minBottom = getGlyphBottom();
-    if (getGlyphTop() > maxTop)
-      maxTop = getGlyphTop();
+    if (getGlyphWidth() > maxWidth)
+      maxWidth = getGlyphWidth();
     if (getGlyphHeight() > maxHeight)
       maxHeight = getGlyphHeight();
-    int rma = getGlyphRight() - getGlyphAdvance();
-    if (rma > maxRightMinusAdvance)
-      maxRightMinusAdvance = rma;
   }
-  cellWidth_ = maxRight - minLeft;
-  cellHeight_ = maxTop - minBottom;
+  blockWidth = maxWidth;
+  blockHeight = maxHeight;
+  textureWidth = maxWidth;
+  textureHeight = maxHeight * 128;
+  descender_ = -minBottom;
 
-  pixelData.resize(cellWidth() * cellHeight() * 128, 0);
+  pixelData.resize(textureWidth * textureHeight, 0);
+  leftData.resize(128);
+  widthData.resize(128);
+  bottomData.resize(128);
+  heightData.resize(128);
   advanceData.resize(128);
 
   for (int ch = 0; ch < 128; ++ch) {
     setGlyph(ch);
-    const FT_Bitmap &bitmap = face->glyph->bitmap;
-    for (int bitmap_row = 0; bitmap_row < bitmap.rows; ++bitmap_row) {
-      for (int bitmap_col = 0; bitmap_col < bitmap.width; ++bitmap_col) {
-        int p = bitmap.buffer[bitmap_row * bitmap.width + bitmap_col];
-        pixelRW(ch, maxTop - getGlyphTop() + bitmap_row,
-                getGlyphLeft() - minLeft + bitmap_col) = p;
-      }
+    for (int x = 0; x < getGlyphWidth(); ++x) {
+      for (int y = 0; y < getGlyphHeight(); ++y)
+        texturePixel(ch, x, y) = glyphPixel(ch, x, y);
     }
+    leftData.at(ch) = getGlyphLeft();
+    widthData.at(ch) = getGlyphWidth();
+    bottomData.at(ch) = getGlyphBottom();
+    heightData.at(ch) = getGlyphHeight();
     advanceData.at(ch) = getGlyphAdvance();
   }
 
@@ -119,7 +114,7 @@ Font::Font(int points)
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, texture_id);
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, cellWidth(), 128 * cellHeight(),
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, textureWidth, textureHeight,
                0, GL_RED, GL_UNSIGNED_BYTE, &pixelData[0]);
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -131,28 +126,31 @@ Font::~Font()
   glDeleteTextures(1, &texture_id);
 }
 
-const unsigned char &Font::pixel(int ch, int row, int col) const
+unsigned char &Font::glyphPixel(int ch, int x, int y)
 {
   if (ch < 0 || ch >= 128)
     FATAL("ch out of range");
-  if (row < 0 || row >= cellHeight())
-    FATAL("row out of range");
-  if (col < 0 || col >= cellWidth())
-    FATAL("col out of range");
-  return pixelData.at(ch * cellWidth() * cellHeight() +
-                      row * cellWidth() + col);
+  if (x < 0 || x >= getGlyphWidth())
+    FATAL("x out of range");
+  if (y < 0 || y >= getGlyphHeight())
+    FATAL("y out of range");
+
+  int y_flipped = getGlyphHeight() - 1 - y;
+  return face->glyph->bitmap.buffer
+    [y_flipped * getGlyphWidth() + x];
 }
 
-unsigned char &Font::pixelRW(int ch, int row, int col)
+unsigned char &Font::texturePixel(int ch, int x, int y)
 {
   if (ch < 0 || ch >= 128)
     FATAL("ch out of range");
-  if (row < 0 || row >= cellHeight())
-    FATAL("row out of range");
-  if (col < 0 || col >= cellWidth())
-    FATAL("col out of range");
-  return pixelData.at(ch * cellWidth() * cellHeight() +
-                      row * cellWidth() + col);
+  if (x < 0 || x >= blockWidth)
+    FATAL("x out of range");
+  if (y < 0 || y >= blockHeight)
+    FATAL("y out of range");
+
+  return pixelData.at(ch * blockWidth * blockHeight
+                      + y * blockWidth + x);
 }
 
 void Font::setGlyph(int c)

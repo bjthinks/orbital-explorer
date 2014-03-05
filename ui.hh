@@ -57,15 +57,21 @@ class ParameterDisplayer : public Composite
 public:
   ParameterDisplayer(Container &e, ParameterReader<T> pr_, const Font &font)
     : Composite(e), pr(pr_), str(*this, font)
-  {}
+  {
+    str.justify(CenterJustified);
+  }
   void draw(Region r)
   {
-    str.point(Vector2(0, 0));
     ostringstream ss;
     ss << pr;
     str.set(ss.str());
     str.color(green);
     Composite::draw(r);
+  }
+  void resize(int width, int height)
+  {
+    str.resize(width, height);
+    Composite::resize(width, height);
   }
 
 private:
@@ -144,20 +150,21 @@ public:
       disp(*this, pc, font),
       inc(*this, pc),
       dec(*this, pc),
-      font_height(font.cellHeight())
+      font_height(font.pointSize())
   {}
   void resize(int width, int height)
   {
     Composite::resize(width, height);
 
     int quarter_width = width / 4;
-    int arrow_height = (height - font_height) / 2;
+    int font_space = font_height * 9 / 8;
+    int arrow_height = (height - font_space) / 2;
 
     dec.move(quarter_width, 0);
     dec.resize(width - 2 * quarter_width, arrow_height);
     disp.move(0, arrow_height);
     disp.resize(width, font_height);
-    inc.move(quarter_width, arrow_height + font_height);
+    inc.move(quarter_width, arrow_height + font_space);
     inc.resize(width - 2 * quarter_width, arrow_height);
   }
 

@@ -51,6 +51,7 @@
 #include FT_FREETYPE_H
 
 #include "glprocs.hh"
+#include "vector.hh"
 
 // Note: kerning is not done, because our chosen
 // font (Source Sans Pro) has no kerning data
@@ -58,19 +59,38 @@
 class Font
 {
 public:
-  Font(int points);
+  Font(int points_);
   ~Font();
-  const unsigned char &pixel(int ch, int row, int col) const;
+  int pointSize() const { return points; }
+  int left(int ch)    const { return leftData.at(ch); }
+  int width(int ch)   const { return widthData.at(ch); }
+  int bottom(int ch)  const { return bottomData.at(ch); }
+  int height(int ch)  const { return heightData.at(ch); }
   int advance(int ch) const { return advanceData.at(ch); }
-  int cellWidth() const { return cellWidth_; }
-  int cellHeight() const { return cellHeight_; }
-  int leftMargin() const {return std::max(0, -minLeft); }
-  int rightMargin() const { return std::max(0, maxRightMinusAdvance); }
+  int descender() const { return descender_; }
+  Vector<2> texCoordLL(int ch) const
+  {
+    return Vector2(0, ch / 128.0);
+  }
+  Vector<2> texCoordLR(int ch) const
+  {
+    return Vector2(width(ch) / double(blockWidth), ch / 128.0);
+  }
+  Vector<2> texCoordUL(int ch) const
+  {
+    return Vector2(0, (ch + height(ch) / double(blockHeight)) / 128.0);
+  }
+  Vector<2> texCoordUR(int ch) const
+  {
+    return Vector2(width(ch) / double(blockWidth), (ch + height(ch) / double(blockHeight)) / 128.0);
+  }
+
   GLuint getTexture() const { return texture_id; }
 
 private:
   static bool initialized;
   static FT_Library library;
+  int points;
   FT_Face face;
   void setGlyph(int c);
   int getGlyphLeft()    { return face->glyph->bitmap_left; }
@@ -82,12 +102,12 @@ private:
   int getGlyphAdvance() { return face->glyph->advance.x / 64; }
 
   std::vector<unsigned char> pixelData;
-  std::vector<int> advanceData;
-  int minLeft, maxRight, maxWidth;
-  int minBottom, maxTop, maxHeight;
-  int maxRightMinusAdvance;
-  int cellWidth_, cellHeight_;
-  unsigned char &pixelRW(int ch, int row, int col);
+  std::vector<int> leftData, widthData, bottomData, heightData, advanceData;
+  int blockWidth, textureWidth, blockHeight, textureHeight;
+  int descender_;
+
+  unsigned char &glyphPixel(int ch, int x, int y);
+  unsigned char &texturePixel(int ch, int x, int y);
 
   GLuint texture_id;
 };
