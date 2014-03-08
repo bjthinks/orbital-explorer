@@ -70,19 +70,23 @@ public:
   int descender() const { return descender_; }
   Vector<2> texCoordLL(int ch) const
   {
-    return Vector2(0, ch / 128.0);
+    return Vector2((ch % chars_per_row) / double(chars_per_row),
+                   (ch / chars_per_row) / double(chars_per_col));
   }
   Vector<2> texCoordLR(int ch) const
   {
-    return Vector2(width(ch) / double(blockWidth), ch / 128.0);
+    return texCoordLL(ch) + Vector2
+      (width(ch) / double(textureWidth), 0);
   }
   Vector<2> texCoordUL(int ch) const
   {
-    return Vector2(0, (ch + height(ch) / double(blockHeight)) / 128.0);
+    return texCoordLL(ch) + Vector2
+      (0, height(ch) / double(textureHeight));
   }
   Vector<2> texCoordUR(int ch) const
   {
-    return Vector2(width(ch) / double(blockWidth), (ch + height(ch) / double(blockHeight)) / 128.0);
+    return texCoordLL(ch) + Vector2
+      (width(ch) / double(textureWidth), height(ch) / double(textureHeight));
   }
 
   GLuint getTexture() const { return texture_id; }
@@ -110,6 +114,9 @@ private:
   unsigned char &texturePixel(int ch, int x, int y);
 
   GLuint texture_id;
+
+  static const int chars_per_row = 8;
+  static const int chars_per_col = 16;
 };
 
 #endif

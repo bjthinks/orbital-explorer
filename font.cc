@@ -84,10 +84,10 @@ Font::Font(int points_)
     if (getGlyphHeight() > maxHeight)
       maxHeight = getGlyphHeight();
   }
-  blockWidth = maxWidth;
+  blockWidth  = maxWidth;
   blockHeight = maxHeight;
-  textureWidth = maxWidth;
-  textureHeight = maxHeight * 128;
+  textureWidth  = blockWidth  * chars_per_row;
+  textureHeight = blockHeight * chars_per_col;
   descender_ = -minBottom;
 
   pixelData.resize(textureWidth * textureHeight, 0);
@@ -149,8 +149,11 @@ unsigned char &Font::texturePixel(int ch, int x, int y)
   if (y < 0 || y >= blockHeight)
     FATAL("y out of range");
 
-  return pixelData.at(ch * blockWidth * blockHeight
-                      + y * blockWidth + x);
+  return pixelData.at
+    (blockWidth * chars_per_row * blockHeight * (ch / chars_per_row)
+     + blockWidth * chars_per_row * y
+     + blockWidth * (ch % chars_per_row)
+     + x);
 }
 
 void Font::setGlyph(int c)
