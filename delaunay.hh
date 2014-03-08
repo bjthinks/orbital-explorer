@@ -159,8 +159,8 @@ inline Simplex<3>::Simplex(const std::vector<Vector<3> > &points,
                               side_vectors[2]);
   if (fabs(volume) < 1e-12) {
     for (unsigned i = 0; i < 4; ++i)
-      printf("Forming point %d: %f %f %f\n", i, point_locations[i][0],
-             point_locations[i][1], point_locations[i][2]);
+      fprintf(stderr, "Forming point %d: %f %f %f\n", i, point_locations[i][0],
+              point_locations[i][1], point_locations[i][2]);
     throw std::logic_error("Tetrahedron with no volume\n");
   }
 
@@ -173,7 +173,7 @@ inline Simplex<3>::Simplex(const std::vector<Vector<3> > &points,
         shortest_side_length = this_side_length;
     }
   if (shortest_side_length < 1e-6) {
-    printf("Shortest side: %f\n", shortest_side_length);
+    fprintf(stderr, "Shortest side: %f\n", shortest_side_length);
     throw std::logic_error("Simplex got too small\n");
   }
 }

@@ -199,10 +199,8 @@ void Uniform<Matrix<4,4> >::operator=(const Matrix<4,4> &x)
 template <typename T>
 void Uniform<T>::verify_used()
 {
-  if (!program.used()) {
-    printf("Wrong program in use\n");
-    exit(0);
-  }
+  if (!program.used())
+    FATAL("Wrong program in use");
 }
 
 VertexArrayObject::VertexArrayObject() :

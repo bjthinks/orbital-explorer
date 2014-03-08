@@ -254,12 +254,8 @@ inline void attachTexture(Texture *tex,
 inline void checkFramebufferCompleteness()
 {
   GLenum isComplete = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
-  if (isComplete != GL_FRAMEBUFFER_COMPLETE) {
-    printf("Framebuffer not complete!\n");
-    printf("glCheckFramebufferStatus returned %x\n", isComplete);
-    GetGLError();
-    exit(1);
-  }
+  if (isComplete != GL_FRAMEBUFFER_COMPLETE)
+    FATAL("Framebuffer not complete");
 }
 
 #endif

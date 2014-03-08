@@ -589,7 +589,6 @@ inline void String::moveCharacters()
   for (int i = 0; i < int(str.size()); ++i) {
     int cx = x + str[i]->left();
     int cy = y + str[i]->bottom();
-    printf("Moving character %d to (%d, %d)\n", i, cx, cy);
     str[i]->move(cx, cy);
     x += str[i]->advance();
   }

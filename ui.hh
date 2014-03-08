@@ -99,7 +99,6 @@ public:
   }
   bool handleClick(const Click &c)
   {
-    printf("Incrementer received click\n");
     pc = pc + 1;
     return true;
   }
@@ -129,7 +128,6 @@ public:
   }
   bool handleClick(const Click &c)
   {
-    printf("Decrementer received click\n");
     pc = pc - 1;
     return true;
   }
