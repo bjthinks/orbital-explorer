@@ -92,7 +92,7 @@ public:
     tri.y(Vector2(geometry.width, 0));
     tri.z(Vector2(geometry.width / 2.0, geometry.height));
     if (pc == pc.max())
-      tri.color(grey);
+      tri.color(Color(0.25, 0.25, 0.25));
     else
       tri.color(white);
     Composite::draw(r);
@@ -121,7 +121,7 @@ public:
     tri.y(Vector2(geometry.width, geometry.height));
     tri.z(Vector2(geometry.width / 2.0, 0));
     if (pc == pc.min())
-      tri.color(grey);
+      tri.color(Color(0.25, 0.25, 0.25));
     else
       tri.color(white);
     Composite::draw(r);
