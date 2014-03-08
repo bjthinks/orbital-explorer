@@ -263,9 +263,9 @@ class String : public Composite
 public:
   String(Container &e, const Font &f);
   ~String();
-  void set(const std::string &s);
-  void color(Color c);
-  void justify(Justification j);
+  String &set(const std::string &s);
+  String &color(Color c);
+  String &justify(Justification j);
 
 private:
   const Font &font;
@@ -520,7 +520,7 @@ inline String::~String()
     delete str[i];
 }
 
-inline void String::set(const std::string &s)
+inline String &String::set(const std::string &s)
 {
   for (int i = 0; i < int(str.size()); ++i)
     delete str[i];
@@ -532,18 +532,24 @@ inline void String::set(const std::string &s)
   }
   moveCharacters();
   setCharacterColors();
+
+  return *this;
 }
 
-inline void String::color(Color c)
+inline String &String::color(Color c)
 {
   cc = c;
   setCharacterColors();
+
+  return *this;
 }
 
-inline void String::justify(Justification j)
+inline String &String::justify(Justification j)
 {
   jj = j;
   moveCharacters();
+
+  return *this;
 }
 
 inline void String::moveCharacters()
