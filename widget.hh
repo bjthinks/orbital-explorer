@@ -267,6 +267,7 @@ public:
   String &color(Color c);
   String &justify(Justification j);
   void resize(int x, int y);
+  int width() const;
 
 private:
   const Font &font;
@@ -559,6 +560,27 @@ inline void String::resize(int x, int y)
   moveCharacters();
 }
 
+inline int String::width() const
+{
+  int w = 0;
+
+  if (str.size() == 0)
+    return w;
+
+  if (str[0]->left() < 0)
+    w += -str[0]->left();
+
+  int n = str.size() - 1;
+  int right_dangle = str[n]->left() + str[n]->width() - str[n]->advance();
+  if (right_dangle > 0)
+    w += right_dangle;
+
+  for (int i = 0; i < int(str.size()); ++i)
+    w += str[i]->advance();
+
+  return w;
+}
+
 inline void String::moveCharacters()
 {
   if (str.size() == 0)
@@ -593,6 +615,10 @@ inline void String::moveCharacters()
 
       for (int i = 0; i < int(str.size()); ++i)
         twice_x -= str[i]->advance();
+
+      // Should this also include any left or right overhang? Doing so
+      // would guarantee that drawing is correct after something like
+      // string.resize(string.width(), ...);
 
       x = twice_x / 2;
     }
