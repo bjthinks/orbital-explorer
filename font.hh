@@ -98,12 +98,11 @@ private:
   FT_Face face;
   void setGlyph(int c);
   int getGlyphLeft()    { return face->glyph->bitmap_left; }
-  int getGlyphRight()   { return getGlyphLeft() + getGlyphWidth(); }
   int getGlyphWidth()   { return face->glyph->bitmap.width; }
-  int getGlyphBottom()  { return getGlyphTop() - getGlyphHeight(); }
+  int getGlyphAdvance() { return face->glyph->advance.x / 64; }
   int getGlyphTop()     { return face->glyph->bitmap_top; }
   int getGlyphHeight()  { return face->glyph->bitmap.rows; }
-  int getGlyphAdvance() { return face->glyph->advance.x / 64; }
+  int getGlyphBottom()  { return getGlyphTop() - getGlyphHeight(); }
 
   std::vector<unsigned char> pixelData;
   std::vector<int> leftData, widthData, bottomData, heightData, advanceData;
