@@ -266,6 +266,7 @@ public:
   String &set(const std::string &s);
   String &color(Color c);
   String &justify(Justification j);
+  void resize(int x, int y);
 
 private:
   const Font &font;
@@ -550,6 +551,12 @@ inline String &String::justify(Justification j)
   moveCharacters();
 
   return *this;
+}
+
+inline void String::resize(int x, int y)
+{
+  Container::resize(x, y);
+  moveCharacters();
 }
 
 inline void String::moveCharacters()
