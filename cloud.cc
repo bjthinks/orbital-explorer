@@ -179,7 +179,7 @@ void Cloud::draw(const Matrix<4,4> &mvpm, int width, int height,
   }
 
   // Don't do this until shaders support in-order rendering
-  // depthSortClouds(camera_position);
+  depthSortClouds(camera_position);
 
   if (primitives_changed || camera_position != old_camera_position) {
     uploadPrimitives();
