@@ -88,6 +88,11 @@ void main(void)
   vec2 integrated_uv = integrated_rim.xy;
   float integrated_Y = integrated_rim.z;
 
+  // Exponential fall-off of intensity. Has no effect on chromaticity.
+  // This takes into account that nearby "particles" of cloud or fog
+  // will invariably block some fraction of farther-away "particles".
+  float cloud_Y = 1 - exp(-integrated_Y);
+
   // Integral of intensity-scaled chromaticity (u * Y and v * Y), divided
   // by total intensity (Y), gives intensity-weighted chromaticity.
   // These are the pre-scaled uv values, offset so white point is origin.
@@ -97,11 +102,6 @@ void main(void)
     pre_uv = integrated_uv / integrated_Y;
   else
     pre_uv = vec2(0, 0);
-
-  // Exponential fall-off of intensity. Has no effect on chromaticity.
-  // This takes into account that nearby "particles" of cloud or fog
-  // will invariably block some fraction of farther-away "particles".
-  float cloud_Y = 1 - exp(-integrated_Y);
 
   // Color rotation
   pre_uv = pre_uv * color_trans;
