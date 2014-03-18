@@ -86,12 +86,8 @@ void main(void)
   vec3 integrated_rim = texture(cloudData, coord).xyw;
 
   // Extract u, v, and Y from the input.
-
-  // Integral of intensity (Y) along line of sight.
-  float integrated_Y = integrated_rim.z;
-
-  // Brightness adjustment.
-  integrated_Y *= brightness;
+  vec2 integrated_uv = integrated_rim.xy * brightness;
+  float integrated_Y = integrated_rim.z * brightness;
 
   // Integral of intensity-scaled chromaticity (u * Y and v * Y), divided
   // by total intensity (Y), gives intensity-weighted chromaticity.
@@ -99,7 +95,7 @@ void main(void)
   // Maximum magnitude of this vector is 1.
   vec2 pre_uv;
   if (integrated_Y > 0)
-    pre_uv = brightness * integrated_rim.xy / integrated_Y;
+    pre_uv = integrated_uv / integrated_Y;
   else
     pre_uv = vec2(0, 0);
 
