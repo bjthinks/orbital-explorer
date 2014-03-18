@@ -90,18 +90,18 @@ void main(void)
   // Integral of intensity (Y) along line of sight.
   float integrated_Y = integrated_rim.z;
 
+  // Brightness adjustment.
+  integrated_Y *= brightness;
+
   // Integral of intensity-scaled chromaticity (u * Y and v * Y), divided
   // by total intensity (Y), gives intensity-weighted chromaticity.
   // These are the pre-scaled uv values, offset so white point is origin.
   // Maximum magnitude of this vector is 1.
   vec2 pre_uv;
   if (integrated_Y > 0)
-    pre_uv = integrated_rim.xy / integrated_Y;
+    pre_uv = brightness * integrated_rim.xy / integrated_Y;
   else
     pre_uv = vec2(0, 0);
-
-  // Brightness adjustment.
-  integrated_Y *= brightness;
 
   // Exponential fall-off of intensity. Has no effect on chromaticity.
   // This takes into account that nearby "particles" of cloud or fog
