@@ -83,7 +83,7 @@ Final::Final(Texture *solidRGBTex_, Texture *cloudDensityTex_)
   color_cycle = 0.0;
 }
 
-void Final::draw(int width, int height, double brightness)
+void Final::draw(int width, int height)
 {
   double this_instant = now();
   if (last_instant < 0)
@@ -99,7 +99,6 @@ void Final::draw(int width, int height, double brightness)
   ct(1,0) = -sin(color_cycle);  ct(1,1) = cos(color_cycle);
   finalProg->uniform<Matrix<2,2> >("color_trans") = ct;
   finalProg->uniform<int>("use_color") = getColorPhase();
-  finalProg->uniform<float>("brightness") = brightness;
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, *solidRGBTex);
   glActiveTexture(GL_TEXTURE1);

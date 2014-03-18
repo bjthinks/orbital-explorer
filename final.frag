@@ -51,7 +51,6 @@ uniform sampler2D solidData;
 uniform sampler2D cloudData;
 uniform mat2x2 color_trans;
 uniform bool use_color;
-uniform float brightness;
 
 vec2 uv_white = vec2(0.19784, 0.46832);
 mat3 uv_to_XYZ = mat3(9, 0, -3,
@@ -86,8 +85,8 @@ void main(void)
   vec3 integrated_rim = texture(cloudData, coord).xyw;
 
   // Extract u, v, and Y from the input.
-  vec2 integrated_uv = integrated_rim.xy * brightness;
-  float integrated_Y = integrated_rim.z * brightness;
+  vec2 integrated_uv = integrated_rim.xy;
+  float integrated_Y = integrated_rim.z;
 
   // Integral of intensity-scaled chromaticity (u * Y and v * Y), divided
   // by total intensity (Y), gives intensity-weighted chromaticity.

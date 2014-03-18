@@ -59,7 +59,8 @@ public:
                      const Orbital *orbital);
   void draw(const Matrix<4,4> &mvpm, int width, int height,
             double near, double far,
-            const Vector<4> &camera_position);
+            const Vector<4> &camera_position,
+            float brightness);
 
 private:
   struct Tetra

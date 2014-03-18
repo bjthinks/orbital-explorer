@@ -170,7 +170,8 @@ void Cloud::uploadPrimitives()
 
 void Cloud::draw(const Matrix<4,4> &mvpm, int width, int height,
                  double near, double far,
-                 const Vector<4> &camera_position)
+                 const Vector<4> &camera_position,
+                 float brightness)
 {
   int num_tetrahedra = indices.size();
 
@@ -193,6 +194,7 @@ void Cloud::draw(const Matrix<4,4> &mvpm, int width, int height,
   cloudProg->uniform<Vector<2> >("nearfar") = Vector2(near, far);
   cloudProg->uniform<int>("solidDepth") = 0;
   cloudProg->uniform<int>("depth_obscuration") = 0;
+  cloudProg->uniform<float>("brightness") = brightness;
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, *solidDepthTex);
   glBindFramebuffer(GL_DRAW_FRAMEBUFFER, cloudFBO);

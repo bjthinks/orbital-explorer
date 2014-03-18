@@ -52,7 +52,7 @@ class Final
 {
 public:
   Final(Texture *solidRGBTex, Texture *cloudDensityTex);
-  void draw(int width, int height, double brightness);
+  void draw(int width, int height);
 
 private:
   Program *finalProg;

@@ -177,6 +177,15 @@ void display(const Viewport &viewport, const Camera &camera)
   if (mvpm != old_mvpm)
     need_full_redraw = true;
   old_mvpm = mvpm;
+
+  double brightness = pow(1.618, getBrightness());
+  if (orbital->square)
+    brightness *= brightness;
+  static double old_brightness = 0.0;
+  if (brightness != old_brightness)
+    need_full_redraw = true;
+  old_brightness = brightness;
+
   static int old_width = 0;
   static int old_height = 0;
   if (width != old_width || height != old_height)
@@ -188,13 +197,10 @@ void display(const Viewport &viewport, const Camera &camera)
 
   if (need_full_redraw) {
     solid->draw(mvpm, width, height);
-    cloud->draw(mvpm, width, height, near, far, camera_position);
+    cloud->draw(mvpm, width, height, near, far, camera_position, brightness);
     need_full_redraw = false;
   }
-  double brightness = pow(1.618, getBrightness());
-  if (orbital->square)
-    brightness *= brightness;
-  final->draw(width, height, brightness);
+  final->draw(width, height);
 
   glFinish();
 
