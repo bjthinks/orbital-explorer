@@ -100,9 +100,6 @@ void main(void)
   else
     pre_uv = vec2(0, 0);
 
-  // Color rotation
-  pre_uv = pre_uv * color_trans;
-
   // Brightness adjustment.
   integrated_Y *= brightness;
 
@@ -110,6 +107,9 @@ void main(void)
   // This takes into account that nearby "particles" of cloud or fog
   // will invariably block some fraction of farther-away "particles".
   float cloud_Y = 1 - exp(-integrated_Y);
+
+  // Color rotation
+  pre_uv = pre_uv * color_trans;
 
   // Make the maximum Y value be 0.5. This keeps us within a well-saturated
   // region of the sRGB gamut.
