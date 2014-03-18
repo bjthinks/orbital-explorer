@@ -201,7 +201,7 @@ void Cloud::draw(const Matrix<4,4> &mvpm, int width, int height,
   glDisable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
   glBlendEquation(GL_FUNC_ADD);
-  glBlendFunc(GL_ONE, GL_ONE);
+  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
   cloudVAO->bind();
   glViewport(0, 0, width, height);
   glDrawElements(GL_LINES_ADJACENCY, 4 * num_tetrahedra, GL_UNSIGNED_INT, 0);

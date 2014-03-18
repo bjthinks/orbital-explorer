@@ -110,6 +110,11 @@ void main(void)
 
   float depth = w_back - w_front;
   vec3 integrand_middle = (integrand_front + integrand_back) / 2.0;
-  integratedValue.xyw = depth * integrand_middle * brightness;
+  vec3 pre_falloff_integrated_value = depth * integrand_middle * brightness;
+
+  vec2 uv = pre_falloff_integrated_value.xy / pre_falloff_integrated_value.z;
+
+  integratedValue.w = 1 - exp(-pre_falloff_integrated_value.z);
+  integratedValue.xy = uv * integratedValue.w;
   integratedValue.z = 0;
 }
