@@ -53,7 +53,6 @@ noperspective in vec2 texPosition;
 out vec4 integratedValue;
 uniform sampler2D solidDepth;
 uniform vec2 nearfar;
-uniform bool depth_obscuration;
 uniform float brightness;
 
 // Extract the w value (which is the pre-projection z value) of the
@@ -111,13 +110,6 @@ void main(void)
 
   float depth = w_back - w_front;
   vec3 integrand_middle = (integrand_front + integrand_back) / 2.0;
-  if (!depth_obscuration) {
-    integratedValue.xyw = depth * integrand_middle * brightness;
-    integratedValue.z = 0;
-  } else {
-    // Assume the z-component of the integrand represents magnitude,
-    // and calculate the falloff of all components based on its
-    // integral along the line of sight.
-    // TODO
-  }
+  integratedValue.xyw = depth * integrand_middle * brightness;
+  integratedValue.z = 0;
 }
