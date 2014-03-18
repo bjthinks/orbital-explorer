@@ -68,7 +68,7 @@ Cloud::Cloud(Texture *solidDepthTex_, Texture *cloudDensityTex)
 
   glGenFramebuffers(1, &cloudFBO);
   glBindFramebuffer(GL_DRAW_FRAMEBUFFER, cloudFBO);
-  attachTexture(cloudDensityTex, GL_RGBA16F, GL_RGB, GL_COLOR_ATTACHMENT0);
+  attachTexture(cloudDensityTex, GL_RGBA16F, GL_RGBA, GL_COLOR_ATTACHMENT0);
   checkFramebufferCompleteness();
 
   GetGLError();

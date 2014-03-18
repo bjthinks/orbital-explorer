@@ -86,7 +86,7 @@ void initialize()
 {
   solidRGBTex = new Texture(GL_RGB8, GL_RGB);
   solidDepthTex = new Texture(GL_DEPTH_COMPONENT24, GL_DEPTH_COMPONENT);
-  cloudDensityTex = new Texture(GL_RGBA16F, GL_RGB);
+  cloudDensityTex = new Texture(GL_RGBA16F, GL_RGBA);
 
   solid = new Solid(solidRGBTex, solidDepthTex);
   cloud = new Cloud(solidDepthTex, cloudDensityTex);

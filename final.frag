@@ -83,7 +83,7 @@ void main(void)
 {
   // The input is integrated (real, imag, mag) from rendering multiple
   // tetrahedra with additive blending.
-  vec3 integrated_rim = texture(cloudData, coord).xyz;
+  vec3 integrated_rim = texture(cloudData, coord).xyw;
 
   // Extract u, v, and Y from the input.
 

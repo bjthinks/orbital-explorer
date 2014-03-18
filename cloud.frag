@@ -50,7 +50,7 @@ noperspective in float one_over_w_back;
 noperspective in vec3 integrand_over_w_front;
 noperspective in vec3 integrand_over_w_back;
 noperspective in vec2 texPosition;
-out vec3 integratedValue;
+out vec4 integratedValue;
 uniform sampler2D solidDepth;
 uniform vec2 nearfar;
 uniform bool depth_obscuration;
@@ -111,7 +111,8 @@ void main(void)
   float depth = w_back - w_front;
   vec3 integrand_middle = (integrand_front + integrand_back) / 2.0;
   if (!depth_obscuration) {
-    integratedValue = depth * integrand_middle;
+    integratedValue.xyw = depth * integrand_middle;
+    integratedValue.z = 0;
   } else {
     // Assume the z-component of the integrand represents magnitude,
     // and calculate the falloff of all components based on its
