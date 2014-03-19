@@ -117,6 +117,6 @@ void main(void)
     uv = pre_falloff_integrated_value.xy / pre_falloff_integrated_value.z;
 
   integratedValue.w = 1 - exp(-pre_falloff_integrated_value.z);
-  integratedValue.xy = uv * integratedValue.w;
+  integratedValue.xy = uv;
   integratedValue.z = 0;
 }
