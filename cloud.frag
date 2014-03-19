@@ -116,7 +116,7 @@ void main(void)
   if (pre_falloff_integrated_value.z > 0)
     uv = pre_falloff_integrated_value.xy / pre_falloff_integrated_value.z;
 
-  integratedValue.w = 1 - exp(-pre_falloff_integrated_value.z);
   integratedValue.xy = uv;
   integratedValue.z = 0;
+  integratedValue.w = 1 - exp(-pre_falloff_integrated_value.z);
 }
