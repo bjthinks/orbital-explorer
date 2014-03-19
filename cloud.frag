@@ -112,7 +112,9 @@ void main(void)
   vec3 integrand_middle = (integrand_front + integrand_back) / 2.0;
   vec3 pre_falloff_integrated_value = depth * integrand_middle * brightness;
 
-  vec2 uv = pre_falloff_integrated_value.xy / pre_falloff_integrated_value.z;
+  vec2 uv = vec2(0, 0);
+  if (pre_falloff_integrated_value.z > 0)
+    uv = pre_falloff_integrated_value.xy / pre_falloff_integrated_value.z;
 
   integratedValue.w = 1 - exp(-pre_falloff_integrated_value.z);
   integratedValue.xy = uv * integratedValue.w;
