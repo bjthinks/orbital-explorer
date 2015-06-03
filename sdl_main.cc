@@ -129,12 +129,6 @@ static int go()
   }
 
   //
-  // Get access to OpenGL functions
-  //
-
-  initGLProcs();
-
-  //
   // Initialize orbital rendering pipeline
   //
 

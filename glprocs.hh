@@ -52,6 +52,4 @@
 #include <epoxy/gl.h>
 #endif
 
-void initGLProcs();
-
 #endif

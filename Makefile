@@ -74,7 +74,6 @@ OFILES=\
 	solid.o \
 	cloud.o \
 	final.o \
-	glprocs.o \
 	myTwEventSDL20.o \
 	icon.o \
 	widget.o \
