@@ -49,7 +49,7 @@ LINKFLAGS := -pthread -lAntTweakBar $(shell sdl2-config --libs) $(shell freetype
 
 ARCH = $(shell uname -s)
 ifeq ($(ARCH),Linux)
-LINKFLAGS += -lGLEW -lGL
+LINKFLAGS += -lepoxy -lGL
 else
 ifeq ($(ARCH),Darwin)
 LINKFLAGS += -framework OpenGL
