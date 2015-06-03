@@ -49,9 +49,7 @@
 #ifdef __APPLE__
 #include <OpenGL/gl3.h>
 #else
-#include <GL/glew.h>
+#include <epoxy/gl.h>
 #endif
-
-void initGLProcs();
 
 #endif

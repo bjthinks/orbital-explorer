@@ -97,13 +97,10 @@ static int go()
   set_sdl_attr(SDL_GL_MULTISAMPLEBUFFERS, 1);
   set_sdl_attr(SDL_GL_MULTISAMPLESAMPLES, 4);
 
-#ifdef __APPLE__
-  // Apple defaults to an OpenGL 2.1 Compatibility context unless you
-  // specify otherwise.
+  // Use an OpenGL 3.2 Core Profile context.
   set_sdl_attr(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   set_sdl_attr(SDL_GL_CONTEXT_MINOR_VERSION, 2);
   set_sdl_attr(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-#endif
 
   Viewport viewport(640, 480);
 
@@ -127,12 +124,6 @@ static int go()
     fprintf(stderr, "SDL_GL_CreateContext(): %s\n", SDL_GetError());
     exit(1);
   }
-
-  //
-  // Get access to OpenGL functions
-  //
-
-  initGLProcs();
 
   //
   // Initialize orbital rendering pipeline
